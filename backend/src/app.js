@@ -13,6 +13,11 @@ function crearApp() {
   app.use('/salud', rutaSalud);
   app.use('/webhook', rutaWebhook);
 
+  // El simulador no existe en producción
+  if (process.env.NODE_ENV !== 'production') {
+    app.use('/simulador', require('./routes/simulador'));
+  }
+
   return app;
 }
 
