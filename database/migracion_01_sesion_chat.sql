@@ -18,5 +18,5 @@ CREATE TABLE IF NOT EXISTS sesion_chat (
 -- carrito.seleccion: {id_categoria, id_producto, cantidad} | null
 --   Lo que el cliente está eligiendo en este momento.
 -- estado: inicio | autorizacion | categoria | producto | cantidad |
---         observacion | agregar_mas | resumen
+--         observacion | agregar_mas | resumen | quitar
 --   Se valida en el código (sin CHECK) para no migrar cada vez que cambie un paso del bot.
