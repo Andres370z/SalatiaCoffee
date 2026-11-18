@@ -20,7 +20,9 @@ Prototipo funcional (TRL5) para automatizar la toma y gestión de pedidos en caf
    ```
    docker compose up -d
    ```
-   Crea la base `salatiacoffee` con las tablas y datos de ejemplo.
+   Crea la base `salatiacoffee` con las tablas, la migración del Sprint 1 y datos de ejemplo.
+   Se publica en el puerto **5433** del equipo (para no chocar con un PostgreSQL local en el 5432);
+   en `backend/.env` usa `DB_PORT=5433`.
 3. Backend:
    ```
    cd backend

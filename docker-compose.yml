@@ -9,11 +9,11 @@ services:
       POSTGRES_PASSWORD: salatia_dev
       POSTGRES_DB: salatiacoffee
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
-      # Los scripts se ejecutan solo la primera vez que se crea el volumen
       - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
       - ./database/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql:ro
+      - ./database/migracion_01_sesion_chat.sql:/docker-entrypoint-initdb.d/03-migracion_01_sesion_chat.sql:ro
 volumes:
   pgdata:
