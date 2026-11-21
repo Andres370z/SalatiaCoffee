@@ -4,6 +4,7 @@ const cors = require('cors');
 const rutaSalud = require('./routes/salud');
 const rutaWebhook = require('./routes/webhook');
 const rutaMesas = require('./routes/mesas');
+const rutaAuth = require('./routes/auth');
 
 // Crea la aplicación Express sin abrir el puerto, para poder usarla en las pruebas.
 function crearApp() {
@@ -14,11 +15,22 @@ function crearApp() {
   app.use('/salud', rutaSalud);
   app.use('/webhook', rutaWebhook);
   app.use('/mesas', rutaMesas);
+  app.use('/auth', rutaAuth);
 
   // El simulador no existe en producción
   if (process.env.NODE_ENV !== 'production') {
     app.use('/simulador', require('./routes/simulador'));
   }
+
+  // Errores no controlados: respuesta JSON y sin detalles internos
+  // eslint-disable-next-line no-unused-vars
+  app.use((error, req, res, next) => {
+    if (error.type === 'entity.parse.failed') {
+      return res.status(400).json({ error: 'El cuerpo de la petición no es un JSON válido' });
+    }
+    console.error(`Error en ${req.method} ${req.originalUrl}:`, error);
+    return res.status(500).json({ error: 'Error interno del servidor' });
+  });
 
   return app;
 }
