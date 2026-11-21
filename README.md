@@ -93,6 +93,13 @@ Los pedidos que se envían al panel no incluyen el teléfono del cliente.
 
 Cuando un pedido pasa a `listo`, se avisa al cliente por WhatsApp (RF-07); sin credenciales de Meta el mensaje se imprime en consola.
 
+### Colección de Postman
+
+En `docs/postman/` hay una colección y un environment listos para importar (**Import** en Postman):
+`SalatiaCoffee.postman_collection.json` y `SalatiaCoffee.postman_environment.json`.
+Elige el environment `SalatiaCoffee`, escribe tu contraseña en la petición "2. Login > Login administrador" y ejecuta
+las carpetas en orden (chat, login, pedidos y estados, menú, usuarios y permisos). El token y el id del pedido se guardan solos.
+
 ## Tecnologías
 
 Node.js, Express, PostgreSQL, Angular, Socket.IO (Sprint 2), WhatsApp Business Platform (Cloud API), Docker, GitHub.
