@@ -52,6 +52,35 @@ Prototipo funcional (TRL5) para automatizar la toma y gestión de pedidos en caf
 5. Pruebas: `cd backend && npm test`. La prueba de integración usa la base de `backend/.env`
    y borra al terminar los datos que crea (teléfonos `579999...`).
 
+## Sprint 2: API del panel (backend)
+
+Todas las rutas, salvo `/auth/login`, exigen el encabezado `Authorization: Bearer <token>`.
+
+1. Crea el primer administrador (la contraseña se pide por consola y se guarda con hash):
+   ```
+   cd backend
+   npm run usuario:crear -- admin "Nombre Apellido" administrador
+   ```
+   El segundo parámetro es el nombre y el tercero el rol (`administrador` o `personal`).
+2. Inicia sesión: `POST /auth/login` con `{"usuario": "...", "contrasena": "..."}` devuelve un token válido por 8 horas.
+
+| Método y ruta | Rol | Función |
+| --- | --- | --- |
+| `POST /auth/login` | público | Iniciar sesión (RF-10) |
+| `GET /pedidos?estado=recibido,listo&fecha=AAAA-MM-DD&limite=100` | personal, administrador | Listar pedidos (hora de Colombia) |
+| `GET /pedidos/:id` | personal, administrador | Detalle con historial de estados |
+| `PATCH /pedidos/:id/estado` con `{"estado": "en_preparacion"}` | personal, administrador | Cambiar estado (RF-06) |
+| `GET /productos`, `GET /categorias` | personal, administrador | Consultar el menú |
+| `POST /productos`, `PUT /productos/:id` | administrador | Crear, editar o desactivar (`{"disponible": false}`) (RF-08) |
+
+Estados: `recibido` → `en_preparacion` → `listo` → `entregado`. Solo se puede pasar a `cancelado` desde `recibido`; un salto no permitido responde 409.
+
+**Tiempo real (Socket.IO)**, en el mismo puerto: el panel se conecta con `io(url, { auth: { token } })` y escucha
+`pedido:nuevo` (pedido completo) y `pedido:estado` (`{ id, estado, estado_anterior, cambiado_en }`).
+Los pedidos que se envían al panel no incluyen el teléfono del cliente.
+
+Cuando un pedido pasa a `listo`, se avisa al cliente por WhatsApp (RF-07); sin credenciales de Meta el mensaje se imprime en consola.
+
 ## Tecnologías
 
 Node.js, Express, PostgreSQL, Angular, Socket.IO (Sprint 2), WhatsApp Business Platform (Cloud API), Docker, GitHub.
