@@ -1,6 +1,6 @@
 require('dotenv').config();
-const crearApp = require('./app');
+const crearServidor = require('./servidor');
 
-const app = crearApp();
+const servidor = crearServidor();
 const puerto = process.env.PORT || 3000;
-app.listen(puerto, () => console.log(`SalatiaCoffee backend en el puerto ${puerto}`));
+servidor.listen(puerto, () => console.log(`SalatiaCoffee backend en el puerto ${puerto}`));
