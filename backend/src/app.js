@@ -6,6 +6,8 @@ const rutaWebhook = require('./routes/webhook');
 const rutaMesas = require('./routes/mesas');
 const rutaAuth = require('./routes/auth');
 const rutaPedidos = require('./routes/pedidos');
+const rutaProductos = require('./routes/productos');
+const rutaCategorias = require('./routes/categorias');
 
 // Crea la aplicación Express sin abrir el puerto, para poder usarla en las pruebas.
 function crearApp() {
@@ -18,6 +20,8 @@ function crearApp() {
   app.use('/mesas', rutaMesas);
   app.use('/auth', rutaAuth);
   app.use('/pedidos', rutaPedidos);
+  app.use('/productos', rutaProductos);
+  app.use('/categorias', rutaCategorias);
 
   // El simulador no existe en producción
   if (process.env.NODE_ENV !== 'production') {
