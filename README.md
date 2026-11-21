@@ -80,6 +80,11 @@ Todas las rutas, salvo `/auth/login`, exigen el encabezado `Authorization: Beare
 | `GET /productos`, `GET /categorias` | personal, administrador | Consultar el menú |
 | `POST /productos`, `PUT /productos/:id` | administrador | Crear, editar o desactivar (`{"disponible": false}`) (RF-08) |
 
+**Atajo para pruebas (no existe con `NODE_ENV=production`):** `POST /simulador/pedido` con
+`{"telefono": "573001234567", "mesa": 3}` crea un pedido de una vez (1 unidad del primer producto disponible).
+Opcionalmente: `"items": [{"id_producto": 1, "cantidad": 2, "nota": "sin azúcar"}]`. Usa la misma lógica que el chat
+(precios y total de la base, historial y evento `pedido:nuevo`) pero registra por su cuenta la autorización de datos del teléfono de prueba.
+
 Estados: `recibido` → `en_preparacion` → `listo` → `entregado`. Solo se puede pasar a `cancelado` desde `recibido`; un salto no permitido responde 409.
 
 **Tiempo real (Socket.IO)**, en el mismo puerto: el panel se conecta con `io(url, { auth: { token } })` y escucha

@@ -80,6 +80,11 @@ async function listarProductosDisponibles(idCategoria) {
   return rows;
 }
 
+async function primerProductoDisponible() {
+  const { rows } = await pool.query('SELECT id FROM producto WHERE disponible ORDER BY id LIMIT 1');
+  return rows[0] || null;
+}
+
 async function obtenerProductos(ids) {
   if (ids.length === 0) return [];
   const { rows } = await pool.query(
@@ -99,5 +104,6 @@ module.exports = {
   registrarAutorizacion,
   listarCategorias,
   listarProductosDisponibles,
+  primerProductoDisponible,
   obtenerProductos,
 };

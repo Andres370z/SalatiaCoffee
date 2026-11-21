@@ -391,6 +391,58 @@ describe('Pedidos en tiempo real, estados e historial (RF-05, RF-06, RF-07, CP-0
   });
 });
 
+describe('Atajo de pruebas POST /simulador/pedido', () => {
+  const TEL_ATAJO = `${PREFIJO_TELEFONO}000003`;
+
+  test('sin items crea un pedido de 1 unidad del primer producto y llega al panel', async () => {
+    const socket = conectarSocket(tokens.personal);
+    await esperarEvento(socket, 'connect');
+    await new Promise((resolver) => setTimeout(resolver, 100));
+
+    const llegada = esperarEvento(socket, 'pedido:nuevo');
+    const { status, cuerpo } = await api('POST', '/simulador/pedido', { cuerpo: { telefono: TEL_ATAJO, mesa: mesa.numero } });
+    expect(status).toBe(201);
+    expect(cuerpo).toMatchObject({ id: expect.any(Number), total: expect.any(Number) });
+
+    const evento = await llegada;
+    expect(evento).toMatchObject({ id: cuerpo.id, estado: 'recibido', mesa: { numero: mesa.numero } });
+    expect(evento.items).toHaveLength(1);
+    expect(evento.items[0].cantidad).toBe(1);
+  });
+
+  test('con items usa los precios de la base, no los que envíe el cliente', async () => {
+    const lista = await api('GET', '/productos', { token: tokens.personal });
+    const [a, b] = lista.cuerpo.filter((p) => p.disponible);
+    const { status, cuerpo } = await api('POST', '/simulador/pedido', {
+      cuerpo: {
+        telefono: TEL_ATAJO,
+        mesa: mesa.numero,
+        items: [
+          { id_producto: a.id, cantidad: 2, nota: 'sin azúcar', precio: 1 },
+          { id_producto: b.id, cantidad: 1 },
+        ],
+      },
+    });
+    expect(status).toBe(201);
+    expect(cuerpo.total).toBe(a.precio * 2 + b.precio);
+
+    const detalle = await api('GET', `/pedidos/${cuerpo.id}`, { token: tokens.personal });
+    expect(detalle.cuerpo.items.map((i) => i.nota)).toEqual(['sin azúcar', null]);
+    expect(detalle.cuerpo.historial.map((h) => h.estado)).toEqual(['recibido']);
+  });
+
+  test.each([
+    ['sin teléfono', { mesa: 1 }, 400],
+    ['sin mesa', { telefono: TEL_ATAJO }, 400],
+    ['mesa inexistente', { telefono: TEL_ATAJO, mesa: 99999 }, 404],
+    ['items vacío', { telefono: TEL_ATAJO, mesa: 1, items: [] }, 400],
+    ['cantidad en cero', { telefono: TEL_ATAJO, mesa: 1, items: [{ id_producto: 1, cantidad: 0 }] }, 400],
+    ['producto inexistente', { telefono: TEL_ATAJO, mesa: 1, items: [{ id_producto: 99999999, cantidad: 1 }] }, 400],
+  ])('rechaza %s', async (_, cuerpo, estado) => {
+    expect((await api('POST', '/simulador/pedido', { cuerpo })).status).toBe(estado);
+  });
+});
+
 describe('Menú (RF-08, CP-06)', () => {
   let idCategoria;
   let idProducto;
