@@ -3,6 +3,7 @@ const { Router } = require('express');
 const { requerirAuth } = require('../middleware/auth');
 const { ESTADOS, esEstadoValido } = require('../services/estados');
 const pedidos = require('../services/pedidos');
+const notificaciones = require('../services/notificaciones');
 
 const router = Router();
 router.use(requerirAuth);
@@ -78,6 +79,9 @@ router.patch('/:id/estado', async (req, res, next) => {
 
   try {
     const resultado = await pedidos.cambiarEstado({ id, nuevoEstado, idUsuario: req.usuario.id });
+    // RF-07: al quedar listo se avisa al cliente. No se espera la respuesta de WhatsApp para
+    // contestar al panel, y avisarPedidoListo nunca lanza errores.
+    if (nuevoEstado === 'listo') notificaciones.avisarPedidoListo(id);
     return res.json(resultado);
   } catch (error) {
     if (error instanceof pedidos.ErrorPedido) {
