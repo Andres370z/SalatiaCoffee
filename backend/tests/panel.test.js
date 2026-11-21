@@ -22,7 +22,8 @@ const USUARIOS = {
   personal: { usuario: 'prueba_int_personal', nombre: 'Personal Prueba', rol: 'personal', activo: true },
   inactivo: { usuario: 'prueba_int_inactivo', nombre: 'Inactivo Prueba', rol: 'personal', activo: false },
 };
-const NOMBRES_USUARIO = Object.values(USUARIOS).map((u) => u.usuario);
+const USUARIO_CREADO_POR_API = 'prueba_int_creado';
+const NOMBRES_USUARIO = [...Object.values(USUARIOS).map((u) => u.usuario), USUARIO_CREADO_POR_API];
 const PREFIJO_TELEFONO = '579998';
 const TEL_PEDIDOS = `${PREFIJO_TELEFONO}000001`;
 const TEL_MENU = `${PREFIJO_TELEFONO}000002`;
@@ -184,6 +185,47 @@ describe('Login (RF-10)', () => {
       body: '{"usuario": ',
     });
     expect(respuesta.status).toBe(400);
+  });
+});
+
+describe('Usuarios (RF-10)', () => {
+  const nuevo = { usuario: USUARIO_CREADO_POR_API, nombre: 'Creado por API', contrasena: 'Otra-clave-1', rol: 'personal' };
+
+  test('el administrador crea un usuario que luego puede iniciar sesión', async () => {
+    const creado = await api('POST', '/usuarios', { token: tokens.admin, cuerpo: nuevo });
+    expect(creado.status).toBe(201);
+    expect(creado.cuerpo).toMatchObject({ usuario: nuevo.usuario, rol: 'personal', activo: true });
+    expect(JSON.stringify(creado.cuerpo)).not.toMatch(/hash|contrasena/i);
+
+    const { rows } = await pool.query('SELECT contrasena_hash FROM usuario_personal WHERE usuario = $1', [nuevo.usuario]);
+    expect(rows[0].contrasena_hash).toMatch(/^\$2[aby]\$/);
+
+    const sesion = await iniciarSesion(nuevo.usuario, nuevo.contrasena);
+    expect(sesion.status).toBe(200);
+    expect(sesion.cuerpo.usuario.rol).toBe('personal');
+  });
+
+  test('un usuario repetido responde 409', async () => {
+    expect((await api('POST', '/usuarios', { token: tokens.admin, cuerpo: nuevo })).status).toBe(409);
+  });
+
+  test('el personal no puede crear usuarios', async () => {
+    const respuesta = await api('POST', '/usuarios', { token: tokens.personal, cuerpo: { ...nuevo, usuario: 'prueba_int_otro' } });
+    expect(respuesta.status).toBe(403);
+  });
+
+  test('POST /auth/primer-admin no hace nada si ya existen usuarios', async () => {
+    process.env.ADMIN_INICIAL_TOKEN = 'clave-de-pruebas';
+    try {
+      const respuesta = await api('POST', '/auth/primer-admin', {
+        cuerpo: { clave_inicial: 'clave-de-pruebas', usuario: 'prueba_int_intruso', nombre: 'Intruso', contrasena: 'Clave-intruso-1' },
+      });
+      expect(respuesta.status).toBe(409);
+      const { rows } = await pool.query("SELECT 1 FROM usuario_personal WHERE usuario = 'prueba_int_intruso'");
+      expect(rows).toHaveLength(0);
+    } finally {
+      delete process.env.ADMIN_INICIAL_TOKEN;
+    }
   });
 });
 

@@ -56,17 +56,24 @@ Prototipo funcional (TRL5) para automatizar la toma y gestión de pedidos en caf
 
 Todas las rutas, salvo `/auth/login`, exigen el encabezado `Authorization: Bearer <token>`.
 
-1. Crea el primer administrador (la contraseña se pide por consola y se guarda con hash):
-   ```
-   cd backend
-   npm run usuario:crear -- admin "Nombre Apellido" administrador
-   ```
-   El segundo parámetro es el nombre y el tercero el rol (`administrador` o `personal`).
+1. Crea el primer administrador, de una de estas dos formas (la contraseña se guarda con hash):
+   - **Por consola** (la contraseña se pide sin mostrarla):
+     ```
+     cd backend
+     npm run usuario:crear -- admin "Nombre Apellido" administrador
+     ```
+   - **Por API:** define `ADMIN_INICIAL_TOKEN=<una clave larga>` en `backend/.env`, reinicia el servidor y envía
+     `POST /auth/primer-admin` con `{"clave_inicial": "...", "usuario": "admin", "nombre": "Nombre Apellido", "contrasena": "..."}`.
+     Solo funciona mientras no exista ningún usuario y está desactivado si la variable está vacía. Después de usarlo, quítala del `.env`.
+
+   Con un administrador ya creado, los demás usuarios se crean con `POST /usuarios` (ver tabla).
 2. Inicia sesión: `POST /auth/login` con `{"usuario": "...", "contrasena": "..."}` devuelve un token válido por 8 horas.
 
 | Método y ruta | Rol | Función |
 | --- | --- | --- |
 | `POST /auth/login` | público | Iniciar sesión (RF-10) |
+| `POST /auth/primer-admin` | clave inicial | Crear el primer administrador (solo si no hay usuarios) |
+| `POST /usuarios` con `{"usuario","nombre","contrasena","rol"}` | administrador | Crear personal u otros administradores |
 | `GET /pedidos?estado=recibido,listo&fecha=AAAA-MM-DD&limite=100` | personal, administrador | Listar pedidos (hora de Colombia) |
 | `GET /pedidos/:id` | personal, administrador | Detalle con historial de estados |
 | `PATCH /pedidos/:id/estado` con `{"estado": "en_preparacion"}` | personal, administrador | Cambiar estado (RF-06) |

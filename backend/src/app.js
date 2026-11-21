@@ -5,6 +5,7 @@ const rutaSalud = require('./routes/salud');
 const rutaWebhook = require('./routes/webhook');
 const rutaMesas = require('./routes/mesas');
 const rutaAuth = require('./routes/auth');
+const rutaUsuarios = require('./routes/usuarios');
 const rutaPedidos = require('./routes/pedidos');
 const rutaProductos = require('./routes/productos');
 const rutaCategorias = require('./routes/categorias');
@@ -19,6 +20,7 @@ function crearApp() {
   app.use('/webhook', rutaWebhook);
   app.use('/mesas', rutaMesas);
   app.use('/auth', rutaAuth);
+  app.use('/usuarios', rutaUsuarios);
   app.use('/pedidos', rutaPedidos);
   app.use('/productos', rutaProductos);
   app.use('/categorias', rutaCategorias);
