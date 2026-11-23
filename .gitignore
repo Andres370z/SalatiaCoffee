@@ -4,3 +4,13 @@ dist/
 .angular/
 *.log
 .DS_Store
+
+# Herramientas de IA y de diseño (no forman parte del proyecto)
+.claude/
+CLAUDE.md
+.impeccable/
+PRODUCT.md
+DESIGN.md
+
+# Copia temporal del diseño anterior del frontend
+frontend/.respaldo-layout/
