@@ -1,0 +1,12 @@
+<div
+  [attr.role]="tone() === 'error' ? 'alert' : 'status'"
+  class="flex items-start gap-2.5 rounded-md border px-3.5 py-3 text-sm font-semibold"
+  [class]="
+    tone() === 'error'
+      ? 'border-cherry bg-cherry-tint text-cherry-ink'
+      : 'border-stone bg-sunken text-ink'
+  "
+>
+  <app-icon [name]="tone() === 'error' ? 'alert' : 'bell'" class="mt-0.5" />
+  <div><ng-content /></div>
+</div>

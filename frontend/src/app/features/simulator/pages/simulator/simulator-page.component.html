@@ -1,0 +1,89 @@
+<header>
+  <p class="eyebrow">Herramienta de pruebas</p>
+  <h1 class="title-1">Simulador</h1>
+  <p class="mt-2 max-w-[68ch] text-ink-soft">
+    Hace lo mismo que un cliente por WhatsApp, sin necesitar WhatsApp. Solo existe mientras el backend no está en
+    producción.
+  </p>
+</header>
+
+<div class="card mt-6 max-w-md">
+  <label class="field-label" for="telefono">Teléfono del cliente</label>
+  <input id="telefono" class="input" [class.input-invalid]="phoneInvalid()" [formControl]="phone" type="text" inputmode="numeric" />
+  @if (phoneInvalid()) {
+    <p class="field-error"><app-icon name="alert" /> Solo dígitos, entre 7 y 20 (ej. 573001234567).</p>
+  } @else {
+    <p class="field-hint">Se usa en el chat y en el pedido rápido.</p>
+  }
+</div>
+
+<div class="mt-8 grid items-start gap-8 [grid-template-columns:repeat(auto-fit,minmax(320px,1fr))]">
+  <section aria-labelledby="chat-titulo" class="flex flex-col gap-4">
+    <h2 class="title-2" id="chat-titulo">Chat con el bot</h2>
+    <p class="text-sm text-ink-soft">Empieza con «Hola MESA-3» y sigue las opciones que te responda.</p>
+
+    <div
+      #chatBox
+      class="card flex h-[420px] max-h-[60vh] flex-col gap-3 overflow-y-auto bg-surface"
+      aria-live="polite"
+      tabindex="0"
+      aria-label="Conversación"
+    >
+      @for (line of chat(); track $index) {
+        <div class="flex" [class.justify-end]="line.from === 'cliente'">
+          <p
+            class="max-w-[85%] whitespace-pre-wrap rounded-md border px-3 py-2 text-sm"
+            [class]="line.from === 'cliente' ? 'border-olive bg-olive-tint' : 'border-stone bg-sunken'"
+          >
+            <span class="eyebrow mb-1 block">{{ line.from === 'cliente' ? 'Cliente' : 'Bot' }}</span>{{ line.text }}
+          </p>
+        </div>
+      } @empty {
+        <p class="m-auto text-sm text-ink-soft">La conversación aparecerá aquí.</p>
+      }
+    </div>
+
+    @if (chatError()) {
+      <app-alert>{{ chatError() }}</app-alert>
+    }
+
+    <form class="flex flex-wrap gap-3" [formGroup]="chatForm" (ngSubmit)="send()" novalidate>
+      <label class="sr-only" for="mensaje">Mensaje</label>
+      <input id="mensaje" class="input min-w-[200px] flex-1" formControlName="text" type="text" placeholder="Escribe como el cliente…" autocomplete="off" />
+      <button class="btn btn-primary" type="submit" [disabled]="sending()">{{ sending() ? 'Enviando…' : 'Enviar' }}</button>
+      <button class="btn btn-secondary" type="button" (click)="clearChat()">Limpiar</button>
+    </form>
+  </section>
+
+  <section aria-labelledby="pedido-titulo" class="flex flex-col gap-4">
+    <h2 class="title-2" id="pedido-titulo">Pedido rápido</h2>
+    <p class="text-sm text-ink-soft">
+      Crea un pedido de una vez: 1 unidad del primer producto disponible. Aparece en el tablero de pedidos.
+    </p>
+
+    <form class="card flex flex-col gap-4 p-7" [formGroup]="orderForm" (ngSubmit)="createOrder()" novalidate>
+      @if (orderError()) {
+        <app-alert>{{ orderError() }}</app-alert>
+      }
+      <div>
+        <label class="field-label" for="mesa">Número de mesa</label>
+        <input id="mesa" class="input" formControlName="mesa" type="number" min="1" inputmode="numeric" />
+        @if (orderForm.controls.mesa.invalid && orderForm.controls.mesa.touched) {
+          <p class="field-error"><app-icon name="alert" /> Escribe un número de mesa mayor a 0.</p>
+        }
+      </div>
+      <div>
+        <button class="btn btn-primary" type="submit" [disabled]="creating()">
+          {{ creating() ? 'Creando…' : 'Crear pedido' }}
+        </button>
+      </div>
+    </form>
+
+    @if (createdOrder(); as order) {
+      <app-alert tone="info">
+        Pedido n.º {{ order.id }} creado para la mesa {{ order.mesa }} por {{ order.total | cop }}.
+        <a class="font-bold underline underline-offset-4" [routerLink]="ordersUrl">Ver en pedidos</a>
+      </app-alert>
+    }
+  </section>
+</div>

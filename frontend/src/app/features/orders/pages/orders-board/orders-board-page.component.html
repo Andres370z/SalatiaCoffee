@@ -1,0 +1,57 @@
+<header class="flex flex-wrap items-end justify-between gap-4">
+  <div>
+    <p class="eyebrow">{{ scope() === 'hoy' ? 'Hoy' : 'Todos los días' }}</p>
+    <h1 class="title-1">Pedidos</h1>
+  </div>
+  <div class="flex flex-wrap items-center gap-3">
+    <!-- Interruptor: pedidos de hoy / historial completo -->
+    <div class="inline-flex rounded-md border border-stone-strong bg-surface p-0.5" role="group" aria-label="Periodo de los pedidos">
+      @for (option of scopes; track option.id) {
+        <button
+          class="min-h-[40px] rounded-sm px-4 text-sm font-semibold transition-colors duration-100 hover:bg-sunken focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-olive aria-pressed:bg-ink aria-pressed:text-paper aria-pressed:hover:bg-ink"
+          type="button"
+          [attr.aria-pressed]="scope() === option.id"
+          (click)="scope.set(option.id)"
+        >
+          {{ option.label }}
+        </button>
+      }
+    </div>
+    <button class="btn btn-secondary" type="button" (click)="refresh$.next()">
+      <app-icon name="refresh" /> Actualizar
+    </button>
+  </div>
+</header>
+
+<div class="mt-6 flex flex-wrap gap-2" role="group" aria-label="Filtrar pedidos">
+  @for (f of filters; track f.id) {
+    <button class="chip" type="button" [attr.aria-pressed]="filter() === f.id" (click)="filter.set(f.id)">
+      {{ f.label }} <strong>{{ counts()[f.id] }}</strong>
+    </button>
+  }
+</div>
+
+@if (error()) {
+  <div class="mt-5"><app-alert>{{ error() }}</app-alert></div>
+}
+
+<section class="mt-6" aria-live="polite">
+  @if (loading()) {
+    <p class="text-ink-soft">Cargando pedidos…</p>
+  } @else if (visible().length === 0) {
+    <app-empty-state title="No hay pedidos aquí" icon="list">
+      Cuando un cliente haga un pedido por WhatsApp aparecerá en esta lista. Se actualiza sola cada pocos
+      segundos.
+    </app-empty-state>
+  } @else {
+    <div class="grid gap-5 [grid-template-columns:repeat(auto-fill,minmax(300px,1fr))]">
+      @for (order of visible(); track order.id) {
+        <app-order-ticket
+          [order]="order"
+          [busy]="busyId() === order.id"
+          (stateRequested)="changeState($event)"
+        />
+      }
+    </div>
+  }
+</section>

@@ -1,0 +1,60 @@
+<main class="grid min-h-screen place-items-center bg-band p-5">
+  <div class="w-full max-w-md">
+    <p class="mb-1 font-serif text-3xl">{{ appName }}</p>
+    <h1 class="title-1 mb-2">Primer administrador</h1>
+    <p class="mb-6 text-ink-soft">
+      Solo funciona mientras no exista ningún usuario y requiere la clave inicial (<code>ADMIN_INICIAL_TOKEN</code>)
+      del archivo <code>.env</code> del backend.
+    </p>
+
+    @if (createdUser(); as user) {
+      <div class="card flex flex-col gap-4 p-7">
+        <app-alert tone="info">Administrador «{{ user }}» creado. Ya puedes iniciar sesión.</app-alert>
+        <a class="btn btn-primary" [routerLink]="loginUrl">Ir a iniciar sesión</a>
+      </div>
+    } @else {
+      <form class="card flex flex-col gap-5 p-7" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        @if (error()) {
+          <app-alert>{{ error() }}</app-alert>
+        }
+
+        <div>
+          <label class="field-label" for="clave_inicial">Clave inicial</label>
+          <input id="clave_inicial" class="input" [class.input-invalid]="invalid('clave_inicial')" formControlName="clave_inicial" type="password" autocomplete="off" />
+          @if (invalid('clave_inicial')) {
+            <p class="field-error"><app-icon name="alert" /> Escribe la clave inicial.</p>
+          }
+        </div>
+
+        <div>
+          <label class="field-label" for="nombre">Nombre</label>
+          <input id="nombre" class="input" [class.input-invalid]="invalid('nombre')" formControlName="nombre" type="text" />
+          @if (invalid('nombre')) {
+            <p class="field-error"><app-icon name="alert" /> Escribe tu nombre.</p>
+          }
+        </div>
+
+        <div>
+          <label class="field-label" for="usuario">Usuario</label>
+          <input id="usuario" class="input" [class.input-invalid]="invalid('usuario')" formControlName="usuario" type="text" autocomplete="username" />
+          @if (invalid('usuario')) {
+            <p class="field-error"><app-icon name="alert" /> De 3 a 60 caracteres: letras, números, punto, guion o guion bajo.</p>
+          }
+        </div>
+
+        <div>
+          <label class="field-label" for="contrasena">Contraseña</label>
+          <input id="contrasena" class="input" [class.input-invalid]="invalid('contrasena')" formControlName="contrasena" type="password" autocomplete="new-password" />
+          @if (invalid('contrasena')) {
+            <p class="field-error"><app-icon name="alert" /> Mínimo 8 caracteres.</p>
+          }
+        </div>
+
+        <button class="btn btn-primary" type="submit" [disabled]="loading()">
+          {{ loading() ? 'Creando…' : 'Crear administrador' }}
+        </button>
+        <a class="btn btn-quiet" [routerLink]="loginUrl">Volver a iniciar sesión</a>
+      </form>
+    }
+  </div>
+</main>

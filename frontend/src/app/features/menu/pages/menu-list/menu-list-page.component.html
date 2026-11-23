@@ -1,0 +1,120 @@
+<header class="flex flex-wrap items-end justify-between gap-4">
+  <div>
+    <p class="eyebrow">Carta</p>
+    <h1 class="title-1">Menú</h1>
+  </div>
+  @if (isAdmin && !formOpen()) {
+    <button class="btn btn-primary" type="button" (click)="openForm(null)">
+      <app-icon name="plus" /> Nuevo producto
+    </button>
+  }
+</header>
+
+@if (store.error()) {
+  <div class="mt-5"><app-alert>{{ store.error() }}</app-alert></div>
+}
+
+<!-- Categorías como filtros -->
+@if (store.categories().length) {
+  <div class="mt-6 flex flex-wrap gap-2" role="group" aria-label="Filtrar por categoría">
+    <button class="chip" type="button" [attr.aria-pressed]="categoryId() === null" (click)="categoryId.set(null)">
+      Todas
+    </button>
+    @for (category of store.categories(); track category.id) {
+      <button class="chip" type="button" [attr.aria-pressed]="categoryId() === category.id" (click)="categoryId.set(category.id)">
+        {{ category.nombre }}
+      </button>
+    }
+  </div>
+}
+
+<div class="mt-8 grid items-start gap-8 min-[1200px]:grid-cols-[1fr_340px]">
+  <!-- Productos -->
+  <section class="flex min-w-0 flex-col gap-10" aria-live="polite">
+    @if (store.loading()) {
+      <p class="text-ink-soft">Cargando menú…</p>
+    } @else if (groups().length === 0 && !store.error()) {
+      <app-empty-state title="No hay productos para mostrar" icon="cup">
+        @if (store.products().length) {
+          Prueba con otra categoría o con otra búsqueda.
+        } @else if (isAdmin) {
+          Agrega el primer producto con «Nuevo producto».
+        } @else {
+          Pídele al administrador que agregue productos.
+        }
+      </app-empty-state>
+    }
+
+    @for (group of groups(); track group.category) {
+      <section [attr.aria-labelledby]="'cat-' + $index">
+        <div class="border-t-4 border-double border-stone-strong pt-5">
+          <h2 class="title-2" [id]="'cat-' + $index">{{ group.category }}</h2>
+        </div>
+        <ul class="mt-5 grid gap-5 [grid-template-columns:repeat(auto-fill,minmax(250px,1fr))]">
+          @for (product of group.products; track product.id) {
+            <li class="card flex flex-col gap-3" [class.bg-sunken]="!product.disponible">
+              <div class="grid aspect-[4/3] place-items-center rounded-sm border border-stone bg-sunken text-stone-strong" aria-hidden="true">
+                <app-icon name="cup" [size]="40" />
+              </div>
+
+              <div class="flex items-end gap-2">
+                <h3 class="title-3" [class.line-through]="!product.disponible">{{ product.nombre }}</h3>
+                <span class="leader" aria-hidden="true"></span>
+                <span class="font-semibold">{{ product.precio | cop }}</span>
+              </div>
+
+              <p class="min-h-[2.5rem] text-sm text-ink-soft">{{ product.descripcion ?? 'Sin descripción.' }}</p>
+
+              <p>
+                @if (product.disponible) {
+                  <span class="badge bg-sage-tint text-sage-ink"><app-icon name="check" /> Disponible</span>
+                } @else {
+                  <span class="badge bg-neutral-tint text-neutral-ink"><app-icon name="x" /> Agotado</span>
+                }
+              </p>
+
+              @if (isAdmin) {
+                <div class="mt-auto flex flex-wrap gap-2 border-t-2 border-dashed border-stone-strong pt-3">
+                  <button class="btn btn-secondary btn-sm" type="button" (click)="openForm(product)">
+                    <app-icon name="pencil" /> Editar
+                  </button>
+                  <button
+                    class="btn btn-quiet btn-sm"
+                    type="button"
+                    [disabled]="store.togglingId() === product.id"
+                    (click)="store.toggleAvailable(product)"
+                  >
+                    {{ product.disponible ? 'Marcar agotado' : 'Marcar disponible' }}
+                  </button>
+                </div>
+              }
+            </li>
+          }
+        </ul>
+      </section>
+    }
+  </section>
+
+  <!-- Panel lateral: formulario del producto o resumen del menú -->
+  <aside class="flex flex-col gap-5 min-[1200px]:sticky min-[1200px]:top-6" aria-label="Panel del menú">
+    @if (formOpen()) {
+      <app-product-form
+        [product]="editing()"
+        [categories]="store.categories()"
+        [saving]="store.saving()"
+        [error]="formError()"
+        (saved)="save($event)"
+        (cancelled)="closeForm()"
+      />
+    } @else {
+      <div class="card flex flex-col gap-3 p-6">
+        <h2 class="title-3">Resumen del menú</h2>
+        <dl class="flex flex-col gap-2 text-[15px]">
+          <div class="flex items-end gap-2"><dt>Productos</dt><span class="leader" aria-hidden="true"></span><dd class="font-semibold">{{ summary().total }}</dd></div>
+          <div class="flex items-end gap-2"><dt>Disponibles</dt><span class="leader" aria-hidden="true"></span><dd class="font-semibold">{{ summary().available }}</dd></div>
+          <div class="flex items-end gap-2"><dt>Agotados</dt><span class="leader" aria-hidden="true"></span><dd class="font-semibold">{{ summary().soldOut }}</dd></div>
+        </dl>
+      </div>
+    }
+  </aside>
+</div>

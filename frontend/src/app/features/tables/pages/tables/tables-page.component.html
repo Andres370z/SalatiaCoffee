@@ -1,0 +1,48 @@
+<header>
+  <p class="eyebrow">Mesas</p>
+  <h1 class="title-1">Enlace de WhatsApp por mesa</h1>
+  <p class="mt-2 max-w-[68ch] text-ink-soft">
+    Cada mesa tiene un enlace que abre WhatsApp con el mensaje «MESA-n» ya escrito. Úsalo para generar el QR
+    que va impreso en la mesa.
+  </p>
+</header>
+
+<form class="card mt-6 flex max-w-md flex-col gap-4 p-7" [formGroup]="form" (ngSubmit)="search()" novalidate>
+  <div>
+    <label class="field-label" for="mesa">Número de mesa</label>
+    <input id="mesa" class="input" formControlName="id" type="number" min="1" inputmode="numeric" />
+    @if (form.controls.id.invalid && form.controls.id.touched) {
+      <p class="field-error"><app-icon name="alert" /> Escribe un número de mesa mayor a 0.</p>
+    }
+  </div>
+  <div>
+    <button class="btn btn-primary" type="submit" [disabled]="loading()">
+      {{ loading() ? 'Consultando…' : 'Obtener enlace' }}
+    </button>
+  </div>
+</form>
+
+@if (error()) {
+  <div class="mt-5 max-w-md"><app-alert>{{ error() }}</app-alert></div>
+}
+
+@if (result(); as qr) {
+  <article class="card mt-6 flex max-w-xl flex-col gap-3 p-7">
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <h2 class="title-2">Mesa {{ qr.numero }}</h2>
+      @if (qr.activa) {
+        <span class="badge bg-sage-tint text-sage-ink"><app-icon name="check" /> Activa</span>
+      } @else {
+        <span class="badge bg-neutral-tint text-neutral-ink"><app-icon name="x" /> Inactiva</span>
+      }
+    </div>
+    <p class="text-sm text-ink-soft">Mensaje que envía el cliente: <strong class="text-ink">{{ qr.texto }}</strong></p>
+    <p class="break-all rounded-md border border-stone bg-sunken p-3 text-sm">{{ qr.enlace }}</p>
+    <div class="flex flex-wrap gap-3">
+      <button class="btn btn-primary" type="button" (click)="copyLink(qr.enlace)">
+        {{ copied() ? 'Enlace copiado' : 'Copiar enlace' }}
+      </button>
+      <a class="btn btn-secondary" [href]="qr.enlace" target="_blank" rel="noopener noreferrer">Abrir en WhatsApp</a>
+    </div>
+  </article>
+}

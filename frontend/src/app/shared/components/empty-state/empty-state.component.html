@@ -1,0 +1,7 @@
+<div
+  class="flex flex-col items-center gap-3 rounded-md border border-dashed border-stone-strong px-6 py-12 text-center"
+>
+  <app-icon [name]="icon()" [size]="28" class="text-ink-soft" />
+  <h2 class="title-3">{{ title() }}</h2>
+  <p class="max-w-[52ch] text-ink-soft"><ng-content /></p>
+</div>

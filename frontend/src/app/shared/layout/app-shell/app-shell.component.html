@@ -1,0 +1,81 @@
+<div class="min-h-screen min-[960px]:grid min-[960px]:grid-cols-[252px_1fr]">
+  <!-- Barra lateral (en pantallas angostas, franja superior) -->
+  <aside
+    class="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-stone bg-surface px-5 py-3 min-[960px]:sticky min-[960px]:top-0 min-[960px]:h-screen min-[960px]:flex-col min-[960px]:flex-nowrap min-[960px]:items-stretch min-[960px]:gap-0 min-[960px]:border-b-0 min-[960px]:border-r min-[960px]:px-0 min-[960px]:py-7"
+  >
+    <p class="font-serif text-[30px] leading-none min-[960px]:px-6">{{ appName }}</p>
+
+    <nav aria-label="Principal" class="flex flex-1 gap-1 overflow-x-auto min-[960px]:mt-9 min-[960px]:flex-none min-[960px]:flex-col min-[960px]:overflow-visible">
+      @for (item of mainNav; track item.url) {
+        <a
+          [routerLink]="item.url"
+          routerLinkActive="!border-olive bg-olive-tint font-bold text-olive-deep"
+          class="flex min-h-[44px] items-center gap-3 whitespace-nowrap border-b-[3px] border-transparent px-4 text-[15px] font-medium hover:bg-sunken focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-olive min-[960px]:border-b-0 min-[960px]:border-l-[3px] min-[960px]:px-6"
+        >
+          <app-icon [name]="item.icon" /> {{ item.label }}
+        </a>
+      }
+
+      <p class="eyebrow hidden px-6 pb-2 pt-7 min-[960px]:block">Gestión</p>
+      <span class="mx-1 my-2 w-px bg-stone min-[960px]:hidden" aria-hidden="true"></span>
+      @for (item of manageNav(); track item.url) {
+        <a
+          [routerLink]="item.url"
+          routerLinkActive="!border-olive bg-olive-tint font-bold text-olive-deep"
+          class="flex min-h-[44px] items-center gap-3 whitespace-nowrap border-b-[3px] border-transparent px-4 text-[15px] font-medium hover:bg-sunken focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-olive min-[960px]:border-b-0 min-[960px]:border-l-[3px] min-[960px]:px-6"
+        >
+          <app-icon [name]="item.icon" /> {{ item.label }}
+        </a>
+      }
+    </nav>
+
+    <div class="flex items-center gap-3 min-[960px]:mt-auto min-[960px]:flex-col min-[960px]:items-stretch min-[960px]:gap-1 min-[960px]:border-t min-[960px]:border-stone min-[960px]:pt-4">
+      <p class="flex items-center gap-2 text-[13px] text-ink-soft min-[960px]:px-6" role="status">
+        <app-icon [name]="healthState() === 'ok' ? 'check' : healthState() === null ? 'refresh' : 'alert'" />
+        {{ healthLabel() }}
+      </p>
+      <button
+        class="flex min-h-[44px] items-center gap-3 border-l-[3px] border-transparent px-4 text-[15px] font-medium hover:bg-sunken focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-olive min-[960px]:px-6"
+        type="button"
+        (click)="logout()"
+      >
+        <app-icon name="logout" /> Cerrar sesión
+      </button>
+    </div>
+  </aside>
+
+  <div class="flex min-w-0 flex-col">
+    <!-- Barra superior: buscador y usuario -->
+    <header class="flex min-h-[72px] flex-wrap items-center gap-x-6 gap-y-2 border-b border-stone bg-surface px-[clamp(20px,5vw,64px)] py-3">
+      <div class="flex-1">
+        @if (search.placeholder(); as placeholder) {
+          <label class="relative block max-w-md">
+            <span class="sr-only">Buscar</span>
+            <input
+              class="input pl-10"
+              type="search"
+              [placeholder]="placeholder"
+              [value]="search.term()"
+              (input)="onSearch($event)"
+            />
+            <svg class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-ink-soft" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+              <circle cx="11" cy="11" r="7" /><path d="M20 20l-4-4" />
+            </svg>
+          </label>
+        }
+      </div>
+
+      <div class="flex items-center gap-3">
+        <span class="grid size-10 place-items-center rounded-sm bg-olive font-semibold text-on-olive" aria-hidden="true">{{ initial() }}</span>
+        <p class="text-sm leading-tight">
+          <span class="block font-semibold">{{ user()?.nombre }}</span>
+          <span class="text-[13px] text-ink-soft">{{ user()?.rol === 'administrador' ? 'Administrador' : 'Personal' }}</span>
+        </p>
+      </div>
+    </header>
+
+    <main class="flex-1 px-[clamp(20px,5vw,64px)] py-9">
+      <router-outlet />
+    </main>
+  </div>
+</div>

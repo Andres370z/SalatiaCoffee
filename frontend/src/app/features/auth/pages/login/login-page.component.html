@@ -1,0 +1,55 @@
+<main class="grid min-h-screen place-items-center bg-band p-5">
+  <div class="w-full max-w-md">
+    <p class="mb-1 font-serif text-3xl">{{ appName }}</p>
+    <h1 class="title-1 mb-6">Iniciar sesión</h1>
+
+    <form class="card flex flex-col gap-5 p-7" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      @if (error()) {
+        <app-alert>{{ error() }}</app-alert>
+      }
+
+      <div>
+        <label class="field-label" for="usuario">Usuario</label>
+        <input
+          id="usuario"
+          class="input"
+          [class.input-invalid]="showError('usuario')"
+          formControlName="usuario"
+          type="text"
+          autocomplete="username"
+          [attr.aria-invalid]="showError('usuario')"
+          [attr.aria-describedby]="showError('usuario') ? 'usuario-error' : null"
+        />
+        @if (showError('usuario')) {
+          <p id="usuario-error" class="field-error"><app-icon name="alert" /> Escribe tu usuario.</p>
+        }
+      </div>
+
+      <div>
+        <label class="field-label" for="contrasena">Contraseña</label>
+        <input
+          id="contrasena"
+          class="input"
+          [class.input-invalid]="showError('contrasena')"
+          formControlName="contrasena"
+          type="password"
+          autocomplete="current-password"
+          [attr.aria-invalid]="showError('contrasena')"
+          [attr.aria-describedby]="showError('contrasena') ? 'contrasena-error' : null"
+        />
+        @if (showError('contrasena')) {
+          <p id="contrasena-error" class="field-error"><app-icon name="alert" /> Escribe tu contraseña.</p>
+        }
+      </div>
+
+      <button class="btn btn-primary" type="submit" [disabled]="loading()">
+        {{ loading() ? 'Entrando…' : 'Entrar al panel' }}
+      </button>
+    </form>
+
+    <p class="mt-5 text-sm text-ink-soft">
+      ¿Primera vez y aún no hay usuarios?
+      <a class="font-semibold text-olive underline underline-offset-4" [routerLink]="firstAdminUrl">Crea el primer administrador</a>
+    </p>
+  </div>
+</main>

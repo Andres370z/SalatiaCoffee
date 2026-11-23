@@ -1,0 +1,35 @@
+<a class="btn btn-quiet btn-sm -ml-3" [routerLink]="backUrl">← Volver a pedidos</a>
+
+<header class="mt-2">
+  <p class="eyebrow">Detalle</p>
+  <h1 class="title-1">Pedido n.º {{ id() }}</h1>
+</header>
+
+@if (error()) {
+  <div class="mt-5"><app-alert>{{ error() }}</app-alert></div>
+}
+
+@if (loading()) {
+  <p class="mt-6 text-ink-soft">Cargando pedido…</p>
+}
+
+@if (order(); as current) {
+  <div class="mt-6 grid items-start gap-8 [grid-template-columns:repeat(auto-fit,minmax(300px,1fr))]">
+    <app-order-ticket [order]="current" [busy]="busy()" [showDetailLink]="false" (stateRequested)="changeState($event)" />
+
+    <section aria-labelledby="historial">
+      <h2 class="title-2" id="historial">Historial</h2>
+      <ol class="mt-4 flex flex-col border-l-2 border-stone-strong">
+        @for (entry of current.historial; track $index) {
+          <li class="relative pb-5 pl-5">
+            <span class="absolute -left-[7px] top-1.5 size-3 rounded-sm border-2 border-stone-strong bg-surface" aria-hidden="true"></span>
+            <app-status-badge [state]="entry.estado" />
+            <p class="mt-1 text-[13px] text-ink-soft">
+              {{ entry.cambiado_en | hora }} · {{ entry.usuario ?? 'Sistema (cliente por WhatsApp)' }}
+            </p>
+          </li>
+        }
+      </ol>
+    </section>
+  </div>
+}

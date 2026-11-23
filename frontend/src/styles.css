@@ -1,0 +1,119 @@
+/* Punto de entrada de Tailwind CSS y estilos globales. Tokens: DESIGN.md (tema Papel). */
+@font-face {
+  font-family: 'Instrument Serif';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/InstrumentSerif-latin.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Instrument Serif';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/InstrumentSerif-Italic-latin.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Figtree';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('/fonts/Figtree-latin.woff2') format('woff2');
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply min-h-screen bg-paper font-sans text-base leading-relaxed text-ink tabular-nums;
+  }
+
+  h1,
+  h2,
+  h3 {
+    @apply font-serif font-normal;
+  }
+}
+
+@layer components {
+  /* Botones: 44 px de alto mínimo, un solo primario por tarjeta o formulario. */
+  .btn {
+    @apply inline-flex min-h-[44px] items-center justify-center gap-2 rounded-md border border-transparent px-5 text-[15px] font-semibold transition-colors duration-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[3px] focus-visible:outline-olive active:translate-y-px disabled:cursor-not-allowed disabled:border-stone disabled:bg-sunken disabled:text-ink-soft disabled:hover:bg-sunken disabled:active:translate-y-0;
+  }
+  .btn-primary {
+    @apply bg-olive text-on-olive hover:bg-olive-deep;
+  }
+  .btn-secondary {
+    @apply border-stone-strong bg-surface text-ink hover:bg-sunken;
+  }
+  .btn-quiet {
+    @apply bg-transparent text-olive hover:bg-sunken;
+  }
+  .btn-danger {
+    @apply bg-cherry text-on-cherry hover:bg-cherry-deep;
+  }
+  .btn-sm {
+    @apply min-h-[36px] px-3 text-sm;
+  }
+
+  /* Campos */
+  .field-label {
+    @apply mb-1.5 block text-sm font-semibold;
+  }
+  .field-hint {
+    @apply mt-1.5 text-[13px] leading-snug text-ink-soft;
+  }
+  .field-error {
+    @apply mt-1.5 flex items-start gap-1.5 text-[13px] font-semibold leading-snug text-cherry-ink;
+  }
+  .input {
+    @apply min-h-[44px] w-full rounded-md border border-stone-strong bg-surface px-3 text-ink placeholder:text-ink-soft hover:border-ink-soft focus:border-olive focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-olive disabled:cursor-not-allowed disabled:bg-sunken disabled:text-ink-soft;
+  }
+  .input-invalid {
+    @apply border-2 border-cherry;
+  }
+
+  /* Contenedores */
+  .card {
+    @apply rounded-md border border-stone bg-surface p-5;
+  }
+
+  /* Insignias de estado: palabra + icono + color */
+  .badge {
+    @apply inline-flex items-center gap-1.5 whitespace-nowrap rounded-sm px-2 py-1 text-[13px] font-semibold leading-none;
+  }
+
+  /* Filtros */
+  .chip {
+    @apply inline-flex min-h-[44px] items-center gap-2 rounded-md border border-stone-strong bg-surface px-4 text-sm font-semibold text-ink transition-colors duration-100 hover:bg-sunken focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[3px] focus-visible:outline-olive;
+  }
+  .chip[aria-pressed='true'] {
+    @apply border-ink bg-ink text-paper hover:bg-ink;
+  }
+
+  /* Títulos con la voz de menú impreso */
+  .title-1 {
+    @apply font-serif text-[44px] leading-[1.05] tracking-tight;
+  }
+  .title-2 {
+    @apply font-serif text-[32px] leading-[1.15];
+  }
+  .title-3 {
+    @apply font-serif text-2xl leading-tight;
+  }
+  .eyebrow {
+    @apply text-xs font-semibold uppercase tracking-[0.08em] text-ink-soft;
+  }
+
+  /* Puntos guía entre producto y precio */
+  .leader {
+    @apply mb-1.5 min-w-4 flex-1 border-b-2 border-dotted border-stone-strong;
+  }
+}

@@ -1,0 +1,72 @@
+<main class="mx-auto flex max-w-4xl flex-col gap-10 px-5 py-12">
+  <header>
+    <p class="eyebrow">{{ nombreApp }}</p>
+    <h1 class="title-1">UI Kit</h1>
+    <nav aria-label="Pantallas" class="mt-4 flex flex-wrap gap-2">
+      <a class="btn btn-secondary btn-sm" [routerLink]="urls.login">Inicio de sesión</a>
+      <a class="btn btn-secondary btn-sm" [routerLink]="urls.orders">Pedidos</a>
+      <a class="btn btn-secondary btn-sm" [routerLink]="urls.menu">Menú</a>
+    </nav>
+  </header>
+
+  <section class="flex flex-col gap-4">
+    <h2 class="title-2">Botones</h2>
+    <div class="flex flex-wrap gap-3">
+      <button class="btn btn-primary" type="button">Principal</button>
+      <button class="btn btn-secondary" type="button">Secundario</button>
+      <button class="btn btn-quiet" type="button">Discreto</button>
+      <button class="btn btn-danger" type="button">Peligro</button>
+      <button class="btn btn-primary" type="button" disabled>Deshabilitado</button>
+    </div>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <h2 class="title-2">Campos</h2>
+    <div class="grid gap-5 sm:grid-cols-2">
+      <div>
+        <label class="field-label" for="kit-normal">Nombre</label>
+        <input id="kit-normal" class="input" type="text" value="Capuchino" />
+      </div>
+      <div>
+        <label class="field-label" for="kit-error">Precio</label>
+        <input id="kit-error" class="input input-invalid" type="text" value="-5" aria-invalid="true" />
+        <p class="field-error"><app-icon name="alert" /> Escribe un precio igual o mayor a 0.</p>
+      </div>
+      <div>
+        <label class="field-label" for="kit-off">Deshabilitado</label>
+        <input id="kit-off" class="input" type="text" value="Solo lectura" disabled />
+      </div>
+    </div>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <h2 class="title-2">Estados del pedido</h2>
+    <div class="flex flex-wrap gap-3">
+      <span class="badge bg-terracotta-tint text-terracotta-ink"><app-icon name="bell" /> Recibido</span>
+      <span class="badge bg-honey-tint text-honey-ink"><app-icon name="flame" /> En preparación</span>
+      <span class="badge bg-sage-tint text-sage-ink"><app-icon name="check" /> Listo</span>
+      <span class="badge bg-neutral-tint text-neutral-ink"><app-icon name="bag" /> Entregado</span>
+      <span class="badge bg-cherry-tint text-cherry-ink"><app-icon name="x" /> Cancelado</span>
+    </div>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <h2 class="title-2">Tarjeta y puntos guía</h2>
+    <article class="card max-w-sm">
+      <h3 class="title-3">Capuchino</h3>
+      <div class="mt-2 flex items-end gap-2">
+        <span>Taza mediana</span><span class="leader" aria-hidden="true"></span>
+        <span class="font-semibold">{{ 7000 | cop }}</span>
+      </div>
+    </article>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <h2 class="title-2">Avisos y estado vacío</h2>
+    <app-alert>Usuario o contraseña incorrectos</app-alert>
+    <app-alert tone="info">Se actualiza sola cada pocos segundos.</app-alert>
+    <app-empty-state title="No hay pedidos aquí" icon="list">
+      Cuando un cliente haga un pedido aparecerá en esta lista.
+    </app-empty-state>
+  </section>
+</main>
