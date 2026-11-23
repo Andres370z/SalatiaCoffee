@@ -1,0 +1,8 @@
+Fuentes del kit de interfaz (subconjunto latino, formato woff2)
+
+- Instrument Serif (normal y cursiva): The Instrument Serif Project Authors.
+- Figtree (pesos 400 a 700, archivo variable): The Figtree Project Authors.
+
+Ambas se distribuyen con la licencia SIL Open Font License 1.1 (https://openfontlicense.org), que permite usarlas, copiarlas y redistribuirlas en proyectos propios o comerciales, siempre que se conserve este aviso y no se vendan por separado.
+
+Origen: Google Fonts (https://fonts.google.com/specimen/Instrument+Serif y https://fonts.google.com/specimen/Figtree), descargadas el 21 de noviembre de 2026 con autorización del autor del proyecto. Sin cambios sobre los archivos originales.

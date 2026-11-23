@@ -1,0 +1,818 @@
+<!doctype html>
+<html lang="es" data-theme="papel">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SalatiaCoffee · Kit de interfaz</title>
+<style>
+/* Fuentes propias (subconjunto latino, licencia SIL OFL 1.1): el kit se ve igual sin internet */
+@font-face { font-family: "Instrument Serif"; font-style: normal; font-weight: 400; font-display: swap; src: url("fonts/InstrumentSerif-latin.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: "Instrument Serif"; font-style: italic; font-weight: 400; font-display: swap; src: url("fonts/InstrumentSerif-Italic-latin.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: "Figtree"; font-style: normal; font-weight: 400 700; font-display: swap; src: url("fonts/Figtree-latin.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+
+/* ============ Tokens ============ */
+:root {
+  --paper: #F4ECE6;        /* fondo de página: arena con un toque rosado */
+  --surface: #FBF7F3;      /* tarjetas y campos */
+  --sunken: #EBDFD7;       /* encabezados, hover suave, deshabilitado */
+  --band: #EDE0D8;         /* fondo de las secciones alternas */
+  --stone: #E3D6CC;        /* filetes y bordes decorativos */
+  --stone-strong: #7F7365; /* borde de controles (3:1) */
+  --ink: #1E1916;
+  --ink-soft: #574C44;
+  --mark: #B85D3B;        /* terracota: marcas y títulos grandes */
+  --hot: #9A4527;         /* terracota profundo: «Nuevo» y acentos cálidos con texto */
+  --hot-hover: #833A20;
+  --on-hot: #FBF6EF;
+  --accent: #66613F;      /* verde oliva: acción principal, enlaces y selección */
+  --accent-hover: #524E33;
+  --on-accent: #FBF8EE;
+  --olive-tint: #E6E4D0;  /* fondo de lo seleccionado */
+  --terra-tint: #F3DFD4;  --terra-ink: #7E3418;
+  --salvia: #6B7A68;      --salvia-tint: #E3E8DF; --salvia-ink: #3D4A3B;
+  --miel-tint: #F3E8C9;   --miel-ink: #6B4E00;
+  --cereza: #9E2A3A;      --danger-fill: #9E2A3A; --danger-fill-hover: #85212F; --on-danger: #FFF7F5;
+  --cereza-tint: #F5DEDF; --cereza-ink: #8A2230;
+  --neutro-tint: #E9E3D8; --neutro-ink: #54493F;
+  --focus: var(--accent);
+  --grain: .06;
+  --r-sm: 4px;
+  --r-md: 6px;
+  --font-display: "Instrument Serif", "Iowan Old Style", Georgia, serif;
+  --font-ui: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme: light;
+}
+[data-theme="espresso"] {
+  --paper: #1A1512; --surface: #231D19; --sunken: #2D2622; --band: #211A16; --stone: #3A312B; --stone-strong: #8E8070;
+  --ink: #F3ECE2; --ink-soft: #BDB0A2;
+  --mark: #D2764F; --hot: #DD7F58; --hot-hover: #E8956F; --on-hot: #1A1512;
+  --accent: #C4BE8A; --accent-hover: #D6D1A6; --on-accent: #1A1712; --olive-tint: #2B2A1E;
+  --terra-tint: #3E241A;  --terra-ink: #F0AC8C;
+  --salvia: #9DB09A;      --salvia-tint: #243025; --salvia-ink: #B7CAB4;
+  --miel-tint: #3A2F12;   --miel-ink: #E6C468;
+  --cereza: #EE8A94;      --danger-fill: #B8394B; --danger-fill-hover: #A02F40; --on-danger: #FFF3F3;
+  --cereza-tint: #3F1D22; --cereza-ink: #F4A7AF;
+  --neutro-tint: #342C26; --neutro-ink: #CBBFB1;
+  --grain: .05;
+  color-scheme: dark;
+}
+
+/* ============ Base ============ */
+*, *::before, *::after { box-sizing: border-box; }
+html { scrollbar-color: var(--stone-strong) var(--paper); scroll-behavior: smooth; scroll-padding-top: 24px; }
+body {
+  margin: 0; background: var(--paper); color: var(--ink);
+  font: 400 16px/1.6 var(--font-ui); font-variant-numeric: tabular-nums;
+  caret-color: var(--accent); -webkit-font-smoothing: antialiased;
+}
+body::before { /* grano de papel: SVG propio, casi invisible */
+  content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: var(--grain);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .35 0 0 0 0 .28 0 0 0 0 .22 0 0 0 .9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+::selection { background: var(--terra-tint); color: var(--ink); }
+h1, h2, h3, h4, p, ul, dl, dd, figure { margin: 0; }
+h1, h2 { font-family: var(--font-display); font-weight: 400; text-wrap: balance; }
+h1 { font-size: clamp(46px, 6.4vw, 76px); line-height: .98; letter-spacing: -.012em; }
+h2 { font-size: clamp(34px, 4.2vw, 46px); line-height: 1.04; letter-spacing: -.006em; }
+h3 { font: 600 18px/1.3 var(--font-ui); }
+p { max-width: 68ch; }
+a { color: var(--accent); text-underline-offset: .22em; text-decoration-thickness: 1px; }
+a:hover { text-decoration-thickness: 2px; }
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 2px solid var(--focus); outline-offset: 3px;
+}
+.num { font-variant-numeric: tabular-nums; }
+.muted { color: var(--ink-soft); }
+[hidden] { display: none !important; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+svg.ic { width: 16px; height: 16px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ============ Estructura ============ */
+.app { position: relative; z-index: 1; display: grid; grid-template-columns: 252px minmax(0, 1fr); min-height: 100vh; }
+.side {
+  position: sticky; top: 0; align-self: start; height: 100vh; overflow-y: auto;
+  display: flex; flex-direction: column; gap: 28px; padding: 28px 22px;
+  background: var(--paper); border-right: 1px solid var(--stone);
+}
+.brand { font: 400 30px/1 var(--font-display); letter-spacing: -.005em; color: var(--ink); text-decoration: none; }
+.brand small { display: block; margin-top: 6px; font: 500 13px/1.3 var(--font-ui); letter-spacing: 0; color: var(--ink-soft); }
+.nav { display: grid; gap: 22px; }
+.nav-group { display: grid; gap: 2px; }
+.nav-group > span { padding: 0 10px 6px; font: 600 12px/1 var(--font-ui); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-soft); }
+.nav a {
+  display: block; padding: 8px 10px; border-radius: var(--r-md); color: var(--ink); text-decoration: none;
+  font: 500 15px/1.3 var(--font-ui); border: 1px solid transparent;
+}
+.nav a:hover { background: var(--sunken); }
+.nav a[aria-current="true"] { background: var(--sunken); border-color: var(--stone); font-weight: 700; }
+.theme { margin-top: auto; display: grid; gap: 8px; }
+.theme > span { font: 600 13px/1 var(--font-ui); color: var(--ink-soft); }
+.seg { display: grid; grid-template-columns: 1fr 1fr; gap: 3px; padding: 3px; border: 1px solid var(--stone-strong); border-radius: var(--r-md); background: var(--surface); }
+.seg button {
+  min-height: 38px; border: 0; border-radius: var(--r-sm); background: transparent; color: var(--ink); cursor: pointer;
+  font: 600 14px/1 var(--font-ui);
+}
+.seg button:hover { background: var(--sunken); }
+.seg button[aria-checked="true"] { background: var(--ink); color: var(--paper); }
+.seg button:focus-visible { outline-offset: -3px; }
+
+main { --gutter: clamp(20px, 5vw, 64px); min-width: 0; padding: 0 var(--gutter) 120px; }
+.intro { padding: clamp(48px, 7vw, 88px) 0 8px; display: grid; gap: 22px; }
+.intro p { font-size: 18px; line-height: 1.6; color: var(--ink-soft); }
+section { padding: 76px 0; }
+/* Bandas de color: las secciones pares ocupan todo el ancho de la columna */
+main > section:nth-of-type(even) { background: var(--band); margin-inline: calc(var(--gutter) * -1); padding-inline: var(--gutter); }main > section:last-of-type { padding-bottom: calc(76px + 120px); margin-bottom: -120px; }
+.section-head { display: grid; gap: 12px; margin-bottom: 36px; padding-top: 28px; border-top: 4px double var(--stone-strong); }
+.section-head p { color: var(--ink-soft); }
+.block { display: grid; gap: 18px; margin-top: 44px; }
+.block > p { color: var(--ink-soft); font-size: 15px; }
+.cap { font: 500 13px/1.3 var(--font-ui); color: var(--ink-soft); }
+.specimen { display: grid; gap: 8px; justify-items: start; align-content: start; }
+.specimen.wide { justify-items: stretch; }
+.row { display: flex; flex-wrap: wrap; gap: 28px 32px; align-items: flex-start; }
+.stack { display: grid; gap: 28px; }
+
+/* ============ Color ============ */
+.swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 22px 20px; }
+.swatch { display: grid; gap: 10px; align-content: start; }
+.swatch__chip { height: 76px; border: 1px solid var(--stone); border-radius: var(--r-md); display: grid; place-items: center; font: 600 22px/1 var(--font-display); }
+.swatch__meta { display: grid; gap: 2px; }
+.swatch__meta strong { font: 700 15px/1.3 var(--font-ui); }
+.swatch__hex { font: 600 13px/1.4 var(--font-ui); letter-spacing: .04em; color: var(--ink-soft); text-transform: uppercase; }
+.swatch__use { font-size: 14px; line-height: 1.45; color: var(--ink); }
+.swatch__ratio { font: 600 13px/1.4 var(--font-ui); color: var(--ink-soft); }
+
+/* ============ Tipografía ============ */
+.scale { display: grid; border-top: 1px solid var(--stone); }
+.scale > div { display: grid; grid-template-columns: 210px minmax(0, 1fr); gap: 8px 32px; align-items: baseline; padding: 18px 0; border-bottom: 1px solid var(--stone); }
+.scale dt { font: 500 13px/1.4 var(--font-ui); color: var(--ink-soft); }
+.scale dd { min-width: 0; overflow-wrap: anywhere; }
+.t-display { font: 400 clamp(44px, 6vw, 68px)/1 var(--font-display); letter-spacing: -.012em; }
+.t-title1 { font: 400 44px/1.05 var(--font-display); letter-spacing: -.01em; }
+.t-title2 { font: 400 32px/1.15 var(--font-display); }
+.t-title3 { font: 400 24px/1.25 var(--font-display); }
+.t-body { font: 400 16px/1.6 var(--font-ui); }
+.t-strong { font: 600 16px/1.6 var(--font-ui); }
+.t-label { font: 600 14px/1.4 var(--font-ui); }
+.t-small { font: 400 13px/1.5 var(--font-ui); color: var(--ink-soft); }
+.t-caps { font: 600 12px/1.4 var(--font-ui); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-soft); }
+.numbers { display: flex; flex-wrap: wrap; gap: 8px 40px; }
+.numbers div { display: grid; gap: 4px; }
+.numbers b { font: 600 26px/1.2 var(--font-ui); }
+.prose { max-width: 64ch; }
+
+/* ============ Botones ============ */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 44px; padding: 0 20px; border: 1px solid transparent; border-radius: var(--r-md);
+  font: 600 15px/1 var(--font-ui); letter-spacing: .005em; cursor: pointer; text-decoration: none; white-space: nowrap;
+  transition: background-color .12s, border-color .12s, color .12s;
+}
+.btn--primary { background: var(--accent); color: var(--on-accent); }
+.btn--primary:hover, .btn--primary.is-hover { background: var(--accent-hover); }
+.btn--secondary { background: var(--surface); color: var(--ink); border-color: var(--stone-strong); }
+.btn--secondary:hover, .btn--secondary.is-hover { background: var(--sunken); border-color: var(--ink-soft); }
+.btn--quiet { background: transparent; color: var(--accent); }
+.btn--quiet:hover, .btn--quiet.is-hover { background: var(--sunken); }
+.btn--danger { background: var(--danger-fill); color: var(--on-danger); }
+.btn--danger:hover, .btn--danger.is-hover { background: var(--danger-fill-hover); }
+.btn:active:not(:disabled):not([aria-disabled="true"]) { transform: translateY(1px); }
+.btn.is-focus { outline: 2px solid var(--focus); outline-offset: 3px; }
+.btn:disabled, .btn[aria-disabled="true"] { background: var(--sunken); color: var(--ink-soft); border-color: var(--stone); cursor: not-allowed; }
+.btn--sm { min-height: 36px; padding: 0 14px; font-size: 14px; }
+.btn--lg { min-height: 52px; padding: 0 26px; font-size: 16px; }
+.btn--icon { width: 44px; padding: 0; }
+.matrix { display: grid; gap: 22px; }
+.matrix__row { display: grid; grid-template-columns: 150px repeat(4, minmax(0, 1fr)); gap: 14px 20px; align-items: start; }
+.matrix__row > b { font: 700 14px/44px var(--font-ui); }
+.matrix__row .specimen { gap: 8px; }
+.matrix__head { color: var(--ink-soft); font: 600 13px/1.3 var(--font-ui); }
+
+/* ============ Campos ============ */
+.field { display: grid; gap: 6px; }
+.field > label, .label { font: 600 14px/1.4 var(--font-ui); color: var(--ink); }
+.input, .select, .textarea {
+  width: 100%; min-height: 44px; padding: 0 12px; background: var(--surface); color: var(--ink);
+  border: 1px solid var(--stone-strong); border-radius: var(--r-md); font: 400 16px/1.5 var(--font-ui);
+  transition: border-color .12s, background-color .12s;
+}
+.textarea { min-height: 104px; padding: 10px 12px; resize: vertical; }
+.input::placeholder, .textarea::placeholder { color: var(--ink-soft); }
+.input:hover, .select:hover, .textarea:hover, .is-hover.input, .is-hover.select, .is-hover.textarea { border-color: var(--ink-soft); }
+.input.is-focus, .select.is-focus, .textarea.is-focus, .input:focus, .select:focus, .textarea:focus {
+  border-color: var(--accent); outline: 2px solid var(--focus); outline-offset: 2px;
+}
+.input:disabled, .select:disabled, .textarea:disabled { background: var(--sunken); color: var(--ink-soft); border-color: var(--stone); cursor: not-allowed; }
+.is-error.input, .is-error.select, .is-error.textarea, [aria-invalid="true"] {
+  border: 2px solid var(--cereza); padding-inline: 11px;
+}
+.is-error.textarea, .textarea[aria-invalid="true"] { padding-block: 9px; }
+.hint { font: 400 13px/1.45 var(--font-ui); color: var(--ink-soft); }
+.error { display: flex; gap: 6px; align-items: flex-start; font: 600 13px/1.45 var(--font-ui); color: var(--cereza); }
+.error svg.ic { margin-top: 2px; }
+.select-wrap { position: relative; }
+.select { appearance: none; padding-right: 40px; cursor: pointer; }
+.select-wrap::after {
+  content: ""; position: absolute; right: 16px; top: 50%; width: 8px; height: 8px; pointer-events: none;
+  border-right: 2px solid var(--ink-soft); border-bottom: 2px solid var(--ink-soft); transform: translateY(-75%) rotate(45deg);
+}
+.fields { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 28px 24px; }
+.check { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; cursor: pointer; font: 500 16px/1.4 var(--font-ui); }
+.check input {
+  appearance: none; flex: none; width: 22px; height: 22px; margin: 0; display: grid; place-items: center; cursor: pointer;
+  background: var(--surface); border: 1px solid var(--stone-strong); border-radius: var(--r-sm); transition: background-color .12s, border-color .12s;
+}
+.check input::after { content: ""; width: 6px; height: 11px; margin-top: -2px; border: solid var(--on-accent); border-width: 0 2px 2px 0; transform: rotate(45deg) scale(0); transition: transform .12s; }
+.check input:checked { background: var(--accent); border-color: var(--accent); }
+.check input:checked::after { transform: rotate(45deg) scale(1); }
+.check:hover input:not(:disabled), .check.is-hover input { border-color: var(--ink-soft); }
+.check.is-focus input, .check input:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
+.check input:disabled { background: var(--sunken); border-color: var(--stone); cursor: not-allowed; }
+.check:has(input:disabled) { color: var(--ink-soft); cursor: not-allowed; }
+.check input[aria-invalid="true"] { border: 2px solid var(--cereza); }
+.switch { display: inline-flex; align-items: center; gap: 12px; min-height: 44px; cursor: pointer; font: 500 16px/1.4 var(--font-ui); }
+.switch input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.switch__track { position: relative; flex: none; width: 48px; height: 28px; background: var(--sunken); border: 1px solid var(--stone-strong); border-radius: var(--r-md); transition: background-color .12s, border-color .12s; }
+.switch__track::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: var(--r-sm); background: var(--ink-soft); transition: transform .14s, background-color .12s; }
+.switch input:checked + .switch__track { background: var(--accent); border-color: var(--accent); }
+.switch input:checked + .switch__track::after { background: var(--on-accent); transform: translateX(20px); }
+.switch:hover .switch__track, .switch.is-hover .switch__track { border-color: var(--ink-soft); }
+.switch input:focus-visible + .switch__track, .switch.is-focus .switch__track { outline: 2px solid var(--focus); outline-offset: 3px; }
+.switch input:disabled + .switch__track { background: var(--sunken); border-color: var(--stone); }
+.switch input:disabled + .switch__track::after { background: var(--stone-strong); }
+.switch:has(input:disabled) { color: var(--ink-soft); cursor: not-allowed; }
+.form-card { max-width: 560px; display: grid; gap: 22px; padding: 28px; background: var(--surface); border: 1px solid var(--stone); border-radius: var(--r-md); }
+.form-card h3 { font: 400 28px/1.15 var(--font-display); }
+.form-actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.status { min-height: 24px; font: 600 14px/1.5 var(--font-ui); color: var(--salvia-ink); }
+.status.ok { display: flex; gap: 8px; align-items: center; }
+[data-theme="papel"] .status.ok { color: var(--salvia-ink); }
+
+/* ============ Insignias y chips ============ */
+.badge { display: inline-flex; align-items: center; gap: 6px; padding: 3px 9px 3px 7px; border-radius: var(--r-sm); font: 600 13px/16px var(--font-ui); white-space: nowrap; }
+.badge--recibido { background: var(--terra-tint); color: var(--terra-ink); }
+.badge--preparacion { background: var(--miel-tint); color: var(--miel-ink); }
+.badge--listo { background: var(--salvia-tint); color: var(--salvia-ink); }
+.badge--entregado { background: var(--neutro-tint); color: var(--neutro-ink); }
+.badge--cancelado { background: var(--cereza-tint); color: var(--cereza-ink); }
+.tag-new { display: inline-block; padding: 2px 8px; border-radius: var(--r-sm); background: var(--hot); color: var(--on-hot); font: 700 12px/18px var(--font-ui); letter-spacing: .02em; }
+.chip {
+  display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 16px; cursor: pointer;
+  background: var(--surface); color: var(--ink); border: 1px solid var(--stone-strong); border-radius: var(--r-md);
+  font: 600 14px/1 var(--font-ui); transition: background-color .12s, border-color .12s, color .12s;
+}
+.chip b { font-weight: 700; font-variant-numeric: tabular-nums; }
+.chip:hover, .chip.is-hover { background: var(--sunken); border-color: var(--ink-soft); }
+.chip.is-focus { outline: 2px solid var(--focus); outline-offset: 3px; }
+.chip[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.chip:disabled { background: var(--sunken); color: var(--ink-soft); border-color: var(--stone); cursor: not-allowed; }
+.chip:active:not(:disabled) { transform: translateY(1px); }
+
+/* ============ Tarjetas ============ */
+.card { display: grid; gap: 12px; padding: 20px; background: var(--surface); border: 1px solid var(--stone); border-radius: var(--r-md); }
+.card h4 { font: 400 26px/1.15 var(--font-display); }
+.card p { font-size: 15px; color: var(--ink-soft); }
+.card a { font-weight: 600; font-size: 15px; }
+.cards-basic { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+
+.line { display: flex; align-items: baseline; gap: 8px; }
+.leader { flex: 1; min-width: 16px; height: 0; border-bottom: 2px dotted var(--stone-strong); transform: translateY(-4px); }
+.price { font: 600 16px/1.4 var(--font-ui); font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+.menu-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr)); gap: 20px; }
+.menu-cards > .specimen, .menu-card { min-width: 0; }
+.menu-card .line { min-width: 0; }
+.menu-card {
+  position: relative; display: grid; gap: 8px; align-content: start; width: 100%; padding: 18px 18px 16px; text-align: left; cursor: pointer;
+  background: var(--surface); color: var(--ink); border: 1px solid var(--stone-strong); border-radius: var(--r-md); font: inherit;
+  transition: border-color .12s, background-color .12s;
+}
+.menu-card:active:not(:disabled) { transform: translateY(1px); }
+.menu-card:hover:not(:disabled), .menu-card.is-hover { border-color: var(--ink); background: var(--surface); }
+.menu-card.is-focus { outline: 2px solid var(--focus); outline-offset: 3px; }
+.menu-card__name { font: 400 24px/1.15 var(--font-display); }
+.menu-card__desc { font-size: 14px; line-height: 1.45; color: var(--ink-soft); }
+.menu-card .line { align-items: baseline; }
+.menu-card[aria-pressed="true"] { border: 2px solid var(--accent); padding: 17px 17px 15px; background: var(--olive-tint); }
+.menu-card[aria-pressed="true"]::after {
+  content: ""; position: absolute; right: 14px; bottom: 14px; width: 6px; height: 11px;
+  border: solid var(--accent); border-width: 0 2px 2px 0; transform: rotate(45deg);
+}
+.menu-card:disabled { cursor: not-allowed; background: var(--sunken); color: var(--ink-soft); border-color: var(--stone); }
+.menu-card:disabled .menu-card__name { text-decoration: line-through; text-decoration-thickness: 1px; }
+
+.tickets { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; align-items: start; }
+.ticket { --edge: var(--stone); position: relative; display: grid; gap: 16px; padding: 22px 22px 20px; background: var(--surface); border: 1px solid var(--edge); border-radius: var(--r-md); }
+.ticket--new { --edge: var(--mark); }
+.ticket__head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.ticket__table { font: 400 32px/1 var(--font-display); }
+.ticket__meta { margin-top: 6px; font: 400 13px/1.4 var(--font-ui); color: var(--ink-soft); }
+.ticket__id { display: grid; justify-items: end; gap: 6px; font: 700 15px/1.2 var(--font-ui); font-variant-numeric: tabular-nums; }
+.ticket__lines { list-style: none; padding: 0; display: grid; gap: 12px; }
+.ticket__lines .qty { font-weight: 700; min-width: 26px; }
+.ticket__lines .name { font-weight: 500; }
+.ticket__lines .note { display: block; margin: 2px 0 0 34px; font: 400 13px/1.4 var(--font-ui); color: var(--ink-soft); }
+.ticket__total { padding-top: 14px; border-top: 1px solid var(--stone); }
+.ticket__total .price { font-size: 20px; }
+/* Corte del ticket: línea punteada de borde a borde con una muesca a cada lado */
+.ticket__actions { position: relative; display: flex; flex-wrap: wrap; gap: 10px; margin: 4px -22px -20px; padding: 22px 22px 20px; border-top: 2px dashed var(--stone-strong); }
+.ticket__actions::before, .ticket__actions::after {
+  content: ""; position: absolute; top: -9px; width: 16px; height: 16px; border-radius: 50%;
+  background: var(--paper); border: 1px solid var(--edge);
+}
+.ticket__actions::before { left: -9px; clip-path: inset(0 0 0 50%); }
+.ticket__actions::after { right: -9px; clip-path: inset(0 50% 0 0); }
+
+/* ============ Responsivo ============ */
+@media (max-width: 1280px) {
+  .matrix__row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .matrix__row > b { grid-column: 1 / -1; line-height: 1.4; }
+  .matrix__head { display: none; }
+}
+@media (max-width: 960px) {
+  .app { grid-template-columns: minmax(0, 1fr); align-content: start; }
+  .side { position: static; height: auto; flex-direction: row; flex-wrap: wrap; align-items: center; gap: 10px 20px; padding: 12px 20px; border-right: 0; border-bottom: 1px solid var(--stone); }
+  .brand small { display: none; }
+  .nav { order: 3; width: 100%; display: flex; gap: 4px; overflow-x: auto; padding-bottom: 2px; }
+  .nav-group { display: contents; }
+  .nav-group > span { display: none; }
+  .nav a { white-space: nowrap; }
+  .theme { margin: 0 0 0 auto; grid-template-columns: auto; }
+  .theme > span { display: none; }
+  .seg button { padding: 0 14px; }
+  .scale > div { grid-template-columns: minmax(0, 1fr); }
+  html { scroll-padding-top: 16px; }
+}
+@media (max-width: 520px) {
+  .ticket__actions .btn--quiet { padding-left: 0; }
+  .matrix__row { grid-template-columns: minmax(0, 1fr); }
+  .form-card { padding: 20px 16px; }
+  .ticket { padding: 18px 16px; }
+}
+.theme-fade, .theme-fade * { transition: background-color .32s cubic-bezier(.16, 1, .3, 1), color .32s cubic-bezier(.16, 1, .3, 1), border-color .32s cubic-bezier(.16, 1, .3, 1) !important; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after, .theme-fade, .theme-fade * { transition: none !important; }
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
+  <symbol id="i-inbox" viewBox="0 0 24 24"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+  <symbol id="i-checks" viewBox="0 0 24 24"><path d="M18 6 7 17l-5-5"/><path d="m22 10-7.5 7.5L13 16"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></symbol>
+</defs></svg>
+
+<div class="app">
+  <aside class="side">
+    <a class="brand" href="#top">SalatiaCoffee<small>Kit de interfaz del panel</small></a>
+    <nav class="nav" aria-label="Secciones de la guía">
+      <div class="nav-group">
+        <span>Fundamentos</span>
+        <a href="#color">Color</a>
+        <a href="#tipografia">Tipografía</a>
+      </div>
+      <div class="nav-group">
+        <span>Componentes</span>
+        <a href="#botones">Botones</a>
+        <a href="#campos">Campos</a>
+        <a href="#tarjetas">Tarjetas</a>
+        <a href="#insignias">Insignias y filtros</a>
+      </div>
+    </nav>
+    <div class="theme">
+      <span id="theme-label">Tema</span>
+      <div class="seg" role="radiogroup" aria-labelledby="theme-label">
+        <button type="button" role="radio" aria-checked="true" data-theme-set="papel">Papel</button>
+        <button type="button" role="radio" aria-checked="false" data-theme-set="espresso">Espresso</button>
+      </div>
+    </div>
+  </aside>
+
+  <main id="top">
+    <header class="intro">
+      <h1>Kit de interfaz del panel</h1>
+      <p>Colores, tipografía y componentes del panel de pedidos de SalatiaCoffee. Cambia entre el tema Papel, para el mostrador, y Espresso, para la cocina con poca luz. Cada componente muestra sus estados: normal, hover, foco, deshabilitado y error.</p>
+    </header>
+
+    <!-- ================= COLOR ================= -->
+    <section id="color" aria-labelledby="h-color">
+      <div class="section-head">
+        <h2 id="h-color">Color</h2>
+        <p>Arena cruda y tinta espresso hacen casi todo el trabajo. El verde oliva marca la acción; el terracota, lo nuevo y los filetes; la salvia acompaña lo secundario. Los contrastes se calculan en vivo con el tema que tengas activo.</p>
+      </div>
+      <div class="block"><h3>Superficies y bordes</h3><div class="swatches" id="sw-superficies"></div></div>
+      <div class="block"><h3>Tinta</h3><div class="swatches" id="sw-tinta"></div></div>
+      <div class="block"><h3>Acción, acento y salvia</h3><div class="swatches" id="sw-acento"></div></div>
+      <div class="block"><h3>Estados del pedido</h3>
+        <p>Cada estado va siempre con su palabra y su icono: el color nunca es lo único que lo distingue.</p>
+        <div class="swatches" id="sw-estados"></div>
+      </div>
+    </section>
+
+    <!-- ================= TIPOGRAFÍA ================= -->
+    <section id="tipografia" aria-labelledby="h-tipo">
+      <div class="section-head">
+        <h2 id="h-tipo">Tipografía</h2>
+        <p>Instrument Serif para títulos, con la voz de un menú impreso. Figtree para toda la interfaz: formularios, tablas, botones y cifras.</p>
+      </div>
+      <dl class="scale">
+        <div><dt>Display · Instrument Serif · 68/68</dt><dd class="t-display">Café de especialidad</dd></div>
+        <div><dt>Título 1 · Instrument Serif · 44/46</dt><dd class="t-title1">Pedidos en curso</dd></div>
+        <div><dt>Título 2 · Instrument Serif · 32/37</dt><dd class="t-title2">Menú de la cafetería</dd></div>
+        <div><dt>Título 3 · Instrument Serif · 24/30</dt><dd class="t-title3">Mesa 3</dd></div>
+        <div><dt>Cuerpo · Figtree 400 · 16/26</dt><dd class="t-body prose">El cliente escaneó el código de su mesa y armó el pedido por WhatsApp. Aparece aquí al instante, sin recargar la página.</dd></div>
+        <div><dt>Cuerpo fuerte · Figtree 600 · 16/26</dt><dd class="t-strong">Cappuccino, 2 unidades</dd></div>
+        <div><dt>Etiqueta · Figtree 600 · 14/20</dt><dd class="t-label">Empezar preparación</dd></div>
+        <div><dt>Pequeño · Figtree 400 · 13/19</dt><dd class="t-small">Hace 4 min · 3:45 p. m.</dd></div>
+        <div><dt>Rótulo · Figtree 600 · 12, mayúsculas</dt><dd class="t-caps">Estado</dd></div>
+      </dl>
+      <div class="block">
+        <h3>Cifras tabulares</h3>
+        <p>Precios, cantidades y números de pedido usan cifras de ancho fijo para que las columnas queden alineadas. Formato de pesos con punto de miles y sin decimales.</p>
+        <div class="numbers" aria-label="Ejemplos de cifras">
+          <div><b class="num">$7.000</b><span class="t-small">Cappuccino</span></div>
+          <div><b class="num">$128.500</b><span class="t-small">Valor vendido</span></div>
+          <div><b class="num">#128</b><span class="t-small">Número de pedido</span></div>
+          <div><b class="num">3:45 p. m.</b><span class="t-small">Hora</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= BOTONES ================= -->
+    <section id="botones" aria-labelledby="h-bot">
+      <div class="section-head">
+        <h2 id="h-bot">Botones</h2>
+        <p>Un solo botón principal por tarjeta o formulario. Texto con verbo en infinitivo. Alto mínimo de 44 px para uso táctil; el tamaño pequeño, de 36 px, es solo para tablas y barras con mouse. La fila «Normal» es interactiva; el resto son estados fijados para compararlos.</p>
+      </div>
+      <div class="matrix" role="group" aria-label="Estados de los botones">
+        <div class="matrix__row matrix__head" aria-hidden="true"><span></span><span>Normal</span><span>Hover</span><span>Foco</span><span>Deshabilitado</span></div>
+
+        <div class="matrix__row"><b>Principal</b>
+          <div class="specimen"><button class="btn btn--primary" type="button">Guardar</button><span class="cap">Normal</span></div>
+          <div class="specimen"><button class="btn btn--primary is-hover" type="button" tabindex="-1">Guardar</button><span class="cap">Hover</span></div>
+          <div class="specimen"><button class="btn btn--primary is-focus" type="button" tabindex="-1">Guardar</button><span class="cap">Foco</span></div>
+          <div class="specimen"><button class="btn btn--primary" type="button" disabled>Guardar</button><span class="cap">Deshabilitado</span></div>
+        </div>
+        <div class="matrix__row"><b>Secundario</b>
+          <div class="specimen"><button class="btn btn--secondary" type="button">Ver detalle</button><span class="cap">Normal</span></div>
+          <div class="specimen"><button class="btn btn--secondary is-hover" type="button" tabindex="-1">Ver detalle</button><span class="cap">Hover</span></div>
+          <div class="specimen"><button class="btn btn--secondary is-focus" type="button" tabindex="-1">Ver detalle</button><span class="cap">Foco</span></div>
+          <div class="specimen"><button class="btn btn--secondary" type="button" disabled>Ver detalle</button><span class="cap">Deshabilitado</span></div>
+        </div>
+        <div class="matrix__row"><b>Discreto</b>
+          <div class="specimen"><button class="btn btn--quiet" type="button">Cancelar</button><span class="cap">Normal</span></div>
+          <div class="specimen"><button class="btn btn--quiet is-hover" type="button" tabindex="-1">Cancelar</button><span class="cap">Hover</span></div>
+          <div class="specimen"><button class="btn btn--quiet is-focus" type="button" tabindex="-1">Cancelar</button><span class="cap">Foco</span></div>
+          <div class="specimen"><button class="btn btn--quiet" type="button" disabled>Cancelar</button><span class="cap">Deshabilitado</span></div>
+        </div>
+        <div class="matrix__row"><b>Peligro</b>
+          <div class="specimen"><button class="btn btn--danger" type="button">Cancelar pedido</button><span class="cap">Normal</span></div>
+          <div class="specimen"><button class="btn btn--danger is-hover" type="button" tabindex="-1">Cancelar pedido</button><span class="cap">Hover</span></div>
+          <div class="specimen"><button class="btn btn--danger is-focus" type="button" tabindex="-1">Cancelar pedido</button><span class="cap">Foco</span></div>
+          <div class="specimen"><button class="btn btn--danger" type="button" disabled>Cancelar pedido</button><span class="cap">Deshabilitado</span></div>
+        </div>
+      </div>
+
+      <div class="block">
+        <h3>Tamaños y con icono</h3>
+        <div class="row">
+          <div class="specimen"><button class="btn btn--primary btn--sm" type="button">Pequeño</button><span class="cap">36 px · dentro de tablas</span></div>
+          <div class="specimen"><button class="btn btn--primary" type="button">Normal</button><span class="cap">44 px</span></div>
+          <div class="specimen"><button class="btn btn--primary btn--lg" type="button">Grande</button><span class="cap">52 px</span></div>
+          <div class="specimen"><button class="btn btn--primary" type="button">Empezar preparación <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-arrow"/></svg></button><span class="cap">Con icono</span></div>
+          <div class="specimen"><button class="btn btn--secondary btn--icon" type="button" aria-label="Cerrar"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-x"/></svg></button><span class="cap">Solo icono</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= CAMPOS ================= -->
+    <section id="campos" aria-labelledby="h-cam">
+      <div class="section-head">
+        <h2 id="h-cam">Campos</h2>
+        <p>La etiqueta va siempre encima del campo. El borde de un campo es más firme que el de una tarjeta para que su límite se vea. Un error cambia el borde, agrega un icono y dice qué corregir.</p>
+      </div>
+
+      <div class="block"><h3>Campo de texto</h3>
+        <div class="fields">
+          <div class="field specimen wide"><label for="e-normal">Nombre del producto</label><input class="input" id="e-normal" type="text" placeholder="Ej. Cappuccino"><span class="cap">Normal</span></div>
+          <div class="field specimen wide"><label for="e-hover">Nombre del producto</label><input class="input is-hover" id="e-hover" type="text" value="Cappuccino" tabindex="-1"><span class="cap">Hover</span></div>
+          <div class="field specimen wide"><label for="e-foco">Nombre del producto</label><input class="input is-focus" id="e-foco" type="text" value="Cappuccino" tabindex="-1"><span class="cap">Foco</span></div>
+          <div class="field specimen wide"><label for="e-dis">Número de pedido</label><input class="input" id="e-dis" type="text" value="#128" disabled><span class="cap">Deshabilitado</span></div>
+          <div class="field specimen wide"><label for="e-err">Precio</label><input class="input is-error" id="e-err" type="text" value="-5000" aria-invalid="true" aria-describedby="e-err-m"><span class="error" id="e-err-m"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-alert"/></svg>El precio debe ser un número mayor o igual a 0.</span><span class="cap">Error</span></div>
+          <div class="field specimen wide"><label for="e-ayuda">Usuario</label><input class="input" id="e-ayuda" type="text" placeholder="Ej. cocina" autocomplete="username"><span class="hint">De 3 a 60 caracteres: letras, números, punto o guion.</span><span class="cap">Con ayuda</span></div>
+        </div>
+      </div>
+
+      <div class="block"><h3>Selección y área de texto</h3>
+        <div class="fields">
+          <div class="field specimen wide"><label for="s-normal">Categoría</label><div class="select-wrap"><select class="select" id="s-normal"><option>Bebidas calientes</option><option>Bebidas frías</option><option>Panadería</option></select></div><span class="cap">Normal</span></div>
+          <div class="field specimen wide"><label for="s-foco">Categoría</label><div class="select-wrap"><select class="select is-focus" id="s-foco" tabindex="-1"><option>Panadería</option></select></div><span class="cap">Foco</span></div>
+          <div class="field specimen wide"><label for="s-dis">Categoría</label><div class="select-wrap"><select class="select" id="s-dis" disabled><option>Bebidas calientes</option></select></div><span class="cap">Deshabilitado</span></div>
+          <div class="field specimen wide"><label for="s-err">Categoría</label><div class="select-wrap"><select class="select is-error" id="s-err" aria-invalid="true" aria-describedby="s-err-m"><option>Elige una categoría</option></select></div><span class="error" id="s-err-m"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-alert"/></svg>Elige una categoría.</span><span class="cap">Error</span></div>
+          <div class="field specimen wide"><label for="t-normal">Descripción</label><textarea class="textarea" id="t-normal" placeholder="Qué lleva el producto"></textarea><span class="cap">Normal</span></div>
+          <div class="field specimen wide"><label for="t-err">Descripción</label><textarea class="textarea is-error" id="t-err" aria-invalid="true" aria-describedby="t-err-m">Espresso con leche espumada y una descripción demasiado larga que sigue y sigue.</textarea><span class="error" id="t-err-m"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-alert"/></svg>La descripción puede tener hasta 500 caracteres.</span><span class="cap">Error</span></div>
+        </div>
+      </div>
+
+      <div class="block"><h3>Casilla e interruptor</h3>
+        <div class="row">
+          <div class="specimen"><label class="check"><input type="checkbox"> Recordarme</label><span class="cap">Normal</span></div>
+          <div class="specimen"><label class="check is-hover"><input type="checkbox" tabindex="-1"> Recordarme</label><span class="cap">Hover</span></div>
+          <div class="specimen"><label class="check is-focus"><input type="checkbox" tabindex="-1" checked> Recordarme</label><span class="cap">Foco, marcada</span></div>
+          <div class="specimen"><label class="check"><input type="checkbox" disabled> Recordarme</label><span class="cap">Deshabilitada</span></div>
+          <div class="specimen"><label class="check"><input type="checkbox" aria-invalid="true" aria-describedby="c-err-m"> Acepto el tratamiento de datos</label><span class="error" id="c-err-m"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-alert"/></svg>Debes aceptar para continuar.</span><span class="cap">Error</span></div>
+        </div>
+        <div class="row">
+          <div class="specimen"><label class="switch"><input type="checkbox" role="switch" checked data-switch><span class="switch__track"></span><span class="switch__text">Disponible</span></label><span class="cap">Encendido</span></div>
+          <div class="specimen"><label class="switch"><input type="checkbox" role="switch" data-switch><span class="switch__track"></span><span class="switch__text">No disponible</span></label><span class="cap">Apagado</span></div>
+          <div class="specimen"><label class="switch is-hover"><input type="checkbox" role="switch" tabindex="-1"><span class="switch__track"></span><span class="switch__text">Hover</span></label><span class="cap">Hover</span></div>
+          <div class="specimen"><label class="switch is-focus"><input type="checkbox" role="switch" tabindex="-1"><span class="switch__track"></span><span class="switch__text">Foco</span></label><span class="cap">Foco</span></div>
+          <div class="specimen"><label class="switch"><input type="checkbox" role="switch" checked disabled><span class="switch__track"></span><span class="switch__text">Bloqueado</span></label><span class="cap">Deshabilitado</span></div>
+        </div>
+      </div>
+
+      <div class="block"><h3>Formulario completo</h3>
+        <p>Pruébalo: deja campos vacíos o escribe un precio negativo y presiona «Guardar producto». Los errores aparecen al salir de cada campo y al enviar.</p>
+        <form class="form-card" id="demo-form" novalidate>
+          <h3>Nuevo producto</h3>
+          <div class="field"><label for="f-nombre">Nombre</label><input class="input" id="f-nombre" name="nombre" type="text" autocomplete="off"><span class="error" id="f-nombre-m" hidden></span></div>
+          <div class="field"><label for="f-precio">Precio en pesos</label><input class="input" id="f-precio" name="precio" type="text" inputmode="numeric" placeholder="Ej. 7000" autocomplete="off"><span class="hint">Sin puntos ni símbolos.</span><span class="error" id="f-precio-m" hidden></span></div>
+          <div class="field"><label for="f-cat">Categoría</label><div class="select-wrap"><select class="select" id="f-cat" name="categoria"><option value="">Selecciona una categoría</option><option>Bebidas calientes</option><option>Bebidas frías</option><option>Panadería</option></select></div><span class="error" id="f-cat-m" hidden></span></div>
+          <div class="field"><label for="f-desc">Descripción</label><textarea class="textarea" id="f-desc" name="descripcion" placeholder="Opcional"></textarea></div>
+          <label class="switch"><input type="checkbox" role="switch" checked data-switch><span class="switch__track"></span><span class="switch__text">Disponible</span></label>
+          <div class="form-actions"><button class="btn btn--primary" type="submit">Guardar producto</button><button class="btn btn--quiet" type="reset">Limpiar</button></div>
+          <p class="status" id="demo-status" role="status" aria-live="polite"></p>
+        </form>
+      </div>
+    </section>
+
+    <!-- ================= TARJETAS ================= -->
+    <section id="tarjetas" aria-labelledby="h-tar">
+      <div class="section-head">
+        <h2 id="h-tar">Tarjetas</h2>
+        <p>Papel sobre papel: un borde fino de piedra y cero sombras. Una tarjeta es un objeto que se puede tocar o leer entero; no es un contenedor para decorar páginas.</p>
+      </div>
+
+      <div class="block"><h3>Comanda de un pedido</h3>
+        <p>Los productos se leen como en un menú impreso, con puntos guía hasta el precio. La línea punteada es el corte del ticket: arriba, lo pedido y el total; abajo, lo que el personal hace con él. Los pedidos de esta guía son datos de ejemplo.</p>
+        <div class="tickets">
+          <article class="ticket ticket--new" aria-label="Pedido 128, mesa 3, recibido">
+            <header class="ticket__head">
+              <div><h4 class="ticket__table">Mesa 3</h4><p class="ticket__meta">Hace 2 min · 3:45 p. m.</p></div>
+              <div class="ticket__id"><span>#128</span><span class="tag-new">Nuevo</span></div>
+            </header>
+            <div><span class="badge badge--recibido"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-inbox"/></svg>Recibido</span></div>
+            <ul class="ticket__lines">
+              <li><div class="line"><span class="qty">2×</span><span class="name">Cappuccino</span><span class="leader"></span><span class="price">$14.000</span></div><span class="note">sin azúcar</span></li>
+              <li><div class="line"><span class="qty">1×</span><span class="name">Croissant</span><span class="leader"></span><span class="price">$6.500</span></div></li>
+            </ul>
+            <div class="line ticket__total"><span class="t-strong">Total</span><span class="leader"></span><span class="price">$20.500</span></div>
+            <div class="ticket__actions"><button class="btn btn--primary" type="button">Empezar preparación <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-arrow"/></svg></button><button class="btn btn--quiet" type="button">Cancelar</button></div>
+          </article>
+
+          <article class="ticket" aria-label="Pedido 127, mesa 1, en preparación">
+            <header class="ticket__head">
+              <div><h4 class="ticket__table">Mesa 1</h4><p class="ticket__meta">Hace 9 min · 3:38 p. m.</p></div>
+              <div class="ticket__id"><span>#127</span></div>
+            </header>
+            <div><span class="badge badge--preparacion"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-clock"/></svg>En preparación</span></div>
+            <ul class="ticket__lines">
+              <li><div class="line"><span class="qty">3×</span><span class="name">Tinto</span><span class="leader"></span><span class="price">$9.000</span></div></li>
+              <li><div class="line"><span class="qty">2×</span><span class="name">Pan de queso</span><span class="leader"></span><span class="price">$7.000</span></div><span class="note">uno sin calentar</span></li>
+            </ul>
+            <div class="line ticket__total"><span class="t-strong">Total</span><span class="leader"></span><span class="price">$16.000</span></div>
+            <div class="ticket__actions"><button class="btn btn--primary" type="button">Marcar como listo <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-check"/></svg></button></div>
+          </article>
+        </div>
+      </div>
+
+      <div class="block"><h3>Producto del menú</h3>
+        <p>Es un botón: se toca para elegirlo. La selección se marca con borde, fondo y un check, no solo con color.</p>
+        <div class="menu-cards" id="menu-cards">
+          <div class="specimen wide"><button class="menu-card" type="button" aria-pressed="false"><span class="line"><span class="menu-card__name">Tinto</span><span class="leader"></span><span class="price">$3.000</span></span><span class="menu-card__desc">Café filtrado</span><span><span class="badge badge--listo"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-check"/></svg>Disponible</span></span></button><span class="cap">Normal</span></div>
+          <div class="specimen wide"><button class="menu-card is-hover" type="button" aria-pressed="false" tabindex="-1"><span class="line"><span class="menu-card__name">Cappuccino</span><span class="leader"></span><span class="price">$7.000</span></span><span class="menu-card__desc">Espresso con leche espumada</span><span><span class="badge badge--listo"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-check"/></svg>Disponible</span></span></button><span class="cap">Hover</span></div>
+          <div class="specimen wide"><button class="menu-card is-focus" type="button" aria-pressed="false" tabindex="-1"><span class="line"><span class="menu-card__name">Croissant</span><span class="leader"></span><span class="price">$6.500</span></span><span class="menu-card__desc">De mantequilla</span><span><span class="badge badge--listo"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-check"/></svg>Disponible</span></span></button><span class="cap">Foco</span></div>
+          <div class="specimen wide"><button class="menu-card" type="button" aria-pressed="true"><span class="line"><span class="menu-card__name">Café frío</span><span class="leader"></span><span class="price">$8.000</span></span><span class="menu-card__desc">Café con hielo y leche</span><span><span class="badge badge--listo"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-check"/></svg>Disponible</span></span></button><span class="cap">Seleccionado</span></div>
+          <div class="specimen wide"><button class="menu-card" type="button" disabled><span class="line"><span class="menu-card__name">Limonada natural</span><span class="leader"></span><span class="price">$5.500</span></span><span class="menu-card__desc">Limón y azúcar</span><span><span class="badge badge--entregado"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-x"/></svg>Agotado</span></span></button><span class="cap">Deshabilitado</span></div>
+        </div>
+      </div>
+
+      <div class="block"><h3>Tarjeta básica</h3>
+        <div class="cards-basic">
+          <div class="card"><h4>Bebidas calientes</h4><p>3 productos disponibles de 3.</p><a href="#tarjetas">Editar categoría</a></div>
+          <div class="card"><h4>Panadería</h4><p>1 producto disponible de 2.</p><a href="#tarjetas">Editar categoría</a></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= INSIGNIAS ================= -->
+    <section id="insignias" aria-labelledby="h-ins">
+      <div class="section-head">
+        <h2 id="h-ins">Insignias y filtros</h2>
+        <p>Una insignia nombra un estado con su palabra, su icono y un par de colores. Un filtro es un botón que se enciende y apaga.</p>
+      </div>
+      <div class="block"><h3>Estados del pedido</h3>
+        <div class="row" aria-label="Estados del pedido">
+          <span class="badge badge--recibido"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-inbox"/></svg>Recibido</span>
+          <span class="badge badge--preparacion"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-clock"/></svg>En preparación</span>
+          <span class="badge badge--listo"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-check"/></svg>Listo</span>
+          <span class="badge badge--entregado"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-checks"/></svg>Entregado</span>
+          <span class="badge badge--cancelado"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-x"/></svg>Cancelado</span>
+          <span class="tag-new">Nuevo</span>
+        </div>
+      </div>
+      <div class="block"><h3>Filtros por estado</h3>
+        <div class="matrix" role="group" aria-label="Estados de los filtros">
+          <div class="row">
+            <div class="specimen"><div class="row" id="chips" style="gap:10px"><button class="chip" type="button" aria-pressed="true">Todos <b>5</b></button><button class="chip" type="button" aria-pressed="false">Recibido <b>2</b></button><button class="chip" type="button" aria-pressed="false">En preparación <b>1</b></button><button class="chip" type="button" aria-pressed="false">Listo <b>1</b></button></div><span class="cap">Interactivos: elige uno</span></div>
+          </div>
+          <div class="row">
+            <div class="specimen"><button class="chip" type="button" aria-pressed="false">Listo <b>1</b></button><span class="cap">Normal</span></div>
+            <div class="specimen"><button class="chip is-hover" type="button" aria-pressed="false" tabindex="-1">Listo <b>1</b></button><span class="cap">Hover</span></div>
+            <div class="specimen"><button class="chip is-focus" type="button" aria-pressed="false" tabindex="-1">Listo <b>1</b></button><span class="cap">Foco</span></div>
+            <div class="specimen"><button class="chip" type="button" aria-pressed="true" tabindex="-1">Listo <b>1</b></button><span class="cap">Seleccionado</span></div>
+            <div class="specimen"><button class="chip" type="button" disabled>Cancelado <b>0</b></button><span class="cap">Deshabilitado</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+(function () {
+  var root = document.documentElement;
+
+  /* ---------- Tema ---------- */
+  var botonesTema = document.querySelectorAll('[data-theme-set]');
+  function aplicarTema(tema, animar) {
+    if (animar) { root.classList.add('theme-fade'); setTimeout(function () { root.classList.remove('theme-fade'); }, 420); }
+    root.setAttribute('data-theme', tema);
+    botonesTema.forEach(function (b) { b.setAttribute('aria-checked', String(b.dataset.themeSet === tema)); });
+    try { localStorage.setItem('salatia-ui-kit-tema', tema); } catch (e) { /* sin almacenamiento */ }
+    pintarMuestras();
+  }
+  botonesTema.forEach(function (b) { b.addEventListener('click', function () { aplicarTema(b.dataset.themeSet, true); }); });
+
+  /* ---------- Muestras de color con contraste en vivo ---------- */
+  function valor(nombre) { return getComputedStyle(root).getPropertyValue(nombre).trim(); }
+  function luminancia(hex) {
+    var c = [1, 3, 5].map(function (i) { return parseInt(hex.slice(i, i + 2), 16) / 255; })
+      .map(function (v) { return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); });
+    return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+  }
+  function contraste(a, b) {
+    var x = luminancia(a), y = luminancia(b), mayor = Math.max(x, y), menor = Math.min(x, y);
+    return (mayor + 0.05) / (menor + 0.05);
+  }
+  function fmt(n) { return n.toFixed(1).replace('.', ',') + ':1'; }
+
+  var grupos = {
+    'sw-superficies': [
+      { v: '--paper', n: 'Arena', u: 'Fondo de página.' },
+      { v: '--band', n: 'Banda', u: 'Fondo de las secciones alternas.' },
+      { v: '--surface', n: 'Superficie', u: 'Tarjetas y campos.' },
+      { v: '--sunken', n: 'Hundido', u: 'Encabezados de tabla, hover suave y campos deshabilitados.' },
+      { v: '--stone', n: 'Piedra', u: 'Filetes y bordes de tarjeta. Solo decoran: no llevan significado.' },
+      { v: '--stone-strong', n: 'Piedra firme', u: 'Borde de campos y controles.', sobre: '--surface', min: 3, etq: 'sobre superficie' }
+    ],
+    'sw-tinta': [
+      { v: '--ink', n: 'Tinta', u: 'Texto principal.', sobre: '--paper', etq: 'sobre arena' },
+      { v: '--ink-soft', n: 'Tinta suave', u: 'Texto secundario, ayudas y metadatos.', sobre: '--paper', etq: 'sobre arena' }
+    ],
+    'sw-acento': [
+      { v: '--accent', n: 'Verde oliva', u: 'Botón principal, enlaces y selección.', sobre: '--paper', etq: 'sobre arena' },
+      { v: '--accent-hover', n: 'Oliva al pasar', u: 'Botón principal con el cursor encima.', sobre: '--on-accent', etq: 'con su texto' },
+      { v: '--mark', n: 'Terracota', u: 'Filetes, marcas y títulos grandes. Nunca texto pequeño.', sobre: '--paper', min: 3, etq: 'sobre arena' },
+      { v: '--hot', n: 'Terracota profundo', u: 'Etiqueta «Nuevo» y acentos cálidos que llevan texto.', sobre: '--on-hot', etq: 'con su texto' },
+      { v: '--salvia', n: 'Salvia', u: 'Marcas secundarias y puntos de estado.', sobre: '--paper', min: 3, etq: 'sobre papel' }
+    ],
+    'sw-estados': [
+      { v: '--terra-tint', t: '--terra-ink', n: 'Recibido', u: 'Terracota: pide atención.' },
+      { v: '--miel-tint', t: '--miel-ink', n: 'En preparación', u: 'Miel: trabajo en curso.' },
+      { v: '--salvia-tint', t: '--salvia-ink', n: 'Listo', u: 'Salvia: completado, a la espera del cliente.' },
+      { v: '--neutro-tint', t: '--neutro-ink', n: 'Entregado', u: 'Piedra: estado final y neutro.' },
+      { v: '--cereza-tint', t: '--cereza-ink', n: 'Cancelado', u: 'Cereza: error y acciones destructivas.' }
+    ]
+  };
+
+  function crearMuestra(m) {
+    var el = document.createElement('div');
+    el.className = 'swatch';
+    el.innerHTML = '<div class="swatch__chip" data-v="' + m.v + '"' + (m.t ? ' data-t="' + m.t + '"' : '') + '>' + (m.t ? 'Aa' : '') + '</div>' +
+      '<div class="swatch__meta"><strong>' + m.n + '</strong><span class="swatch__hex"></span><span class="swatch__use">' + m.u + '</span><span class="swatch__ratio"></span></div>';
+    el._m = m;
+    return el;
+  }
+  function pintarMuestras() {
+    Object.keys(grupos).forEach(function (id) {
+      var cont = document.getElementById(id);
+      if (!cont) return;
+      if (!cont.children.length) grupos[id].forEach(function (m) { cont.appendChild(crearMuestra(m)); });
+      Array.prototype.forEach.call(cont.children, function (el) {
+        var m = el._m, chip = el.querySelector('.swatch__chip');
+        chip.style.background = 'var(' + m.v + ')';
+        if (m.t) chip.style.color = 'var(' + m.t + ')';
+        var hex = valor(m.v);
+        el.querySelector('.swatch__hex').textContent = m.t ? hex + ' sobre ' + valor(m.t) : hex;
+        var r = '';
+        if (m.t) { r = fmt(contraste(valor(m.t), hex)) + ' el texto sobre su fondo'; }
+        else if (m.sobre) {
+          var par = (m.v === '--accent-hover' || m.v === '--hot') ? [valor(m.sobre), hex] : [hex, valor(m.sobre)];
+          var c = contraste(par[0], par[1]);
+          r = fmt(c) + ' ' + m.etq + (c < (m.min || 4.5) ? ' · bajo el mínimo' : '');
+        }
+        el.querySelector('.swatch__ratio').textContent = r;
+      });
+    });
+  }
+
+  /* ---------- Interruptores: el texto nombra el estado ---------- */
+  document.querySelectorAll('[data-switch]').forEach(function (input) {
+    var texto = input.parentElement.querySelector('.switch__text');
+    function sync() { texto.textContent = input.checked ? 'Disponible' : 'No disponible'; }
+    input.addEventListener('change', sync);
+  });
+
+  /* ---------- Tarjetas de producto y filtros: botones de alternar ---------- */
+  document.querySelectorAll('#menu-cards .menu-card:not(:disabled):not(.is-hover):not(.is-focus)').forEach(function (b) {
+    b.addEventListener('click', function () { b.setAttribute('aria-pressed', String(b.getAttribute('aria-pressed') !== 'true')); });
+  });
+  var chips = document.querySelectorAll('#chips .chip');
+  chips.forEach(function (c) {
+    c.addEventListener('click', function () { chips.forEach(function (o) { o.setAttribute('aria-pressed', String(o === c)); }); });
+  });
+
+  /* ---------- Formulario de ejemplo ---------- */
+  var form = document.getElementById('demo-form');
+  var estado = document.getElementById('demo-status');
+  var iconoError = '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-alert"/></svg>';
+  var reglas = {
+    'f-nombre': function (v) { return !v.trim() ? 'Escribe el nombre del producto.' : v.trim().length > 120 ? 'El nombre puede tener hasta 120 caracteres.' : ''; },
+    'f-precio': function (v) {
+      if (!v.trim()) return 'Escribe el precio.';
+      return /^\d+(\.\d{1,2})?$/.test(v.trim()) ? '' : 'El precio debe ser un número mayor o igual a 0.';
+    },
+    'f-cat': function (v) { return v ? '' : 'Elige una categoría.'; }
+  };
+  function validar(id) {
+    var campo = document.getElementById(id), msg = document.getElementById(id + '-m');
+    var error = reglas[id](campo.value);
+    if (error) {
+      campo.setAttribute('aria-invalid', 'true'); campo.setAttribute('aria-describedby', id + '-m');
+      msg.innerHTML = iconoError + error; msg.hidden = false;
+    } else {
+      campo.removeAttribute('aria-invalid'); campo.removeAttribute('aria-describedby');
+      msg.hidden = true; msg.textContent = '';
+    }
+    return !error;
+  }
+  Object.keys(reglas).forEach(function (id) {
+    var campo = document.getElementById(id);
+    campo.addEventListener('blur', function () { validar(id); });
+    campo.addEventListener('input', function () { if (campo.getAttribute('aria-invalid')) validar(id); });
+  });
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var todos = Object.keys(reglas).map(validar);
+    var primero = Object.keys(reglas).filter(function (id) { return document.getElementById(id).getAttribute('aria-invalid'); })[0];
+    if (primero) { document.getElementById(primero).focus(); estado.className = 'status'; estado.textContent = ''; return; }
+    estado.className = 'status ok';
+    estado.innerHTML = '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-check"/></svg>Producto guardado. Es un ejemplo: no se envía a ningún servidor.';
+  });
+  form.addEventListener('reset', function () {
+    Object.keys(reglas).forEach(function (id) {
+      var campo = document.getElementById(id); campo.removeAttribute('aria-invalid'); campo.removeAttribute('aria-describedby');
+      var msg = document.getElementById(id + '-m'); msg.hidden = true; msg.textContent = '';
+    });
+    estado.className = 'status'; estado.textContent = '';
+  });
+
+  /* ---------- Navegación: sección actual ---------- */
+  var enlaces = Array.prototype.slice.call(document.querySelectorAll('.nav a'));
+  if ('IntersectionObserver' in window) {
+    var visibles = {};
+    var obs = new IntersectionObserver(function (entradas) {
+      entradas.forEach(function (en) { visibles[en.target.id] = en.isIntersecting; });
+      var activa = enlaces.map(function (a) { return a.getAttribute('href').slice(1); }).filter(function (id) { return visibles[id]; })[0];
+      enlaces.forEach(function (a) { a.toggleAttribute('aria-current', a.getAttribute('href') === '#' + activa); if (a.getAttribute('href') === '#' + activa) a.setAttribute('aria-current', 'true'); });
+    }, { rootMargin: '-20% 0px -60% 0px' });
+    document.querySelectorAll('main section').forEach(function (s) { obs.observe(s); });
+  }
+
+  /* ---------- Arranque ---------- */
+  // El tema puede venir en el enlace (?tema=espresso), si no, del último elegido
+  var guardado = null;
+  var enEnlace = /[?&]tema=(papel|espresso)/.exec(location.search);
+  if (enEnlace) guardado = enEnlace[1];
+  else { try { guardado = localStorage.getItem('salatia-ui-kit-tema'); } catch (e) { /* sin almacenamiento */ } }
+  aplicarTema(guardado === 'espresso' ? 'espresso' : 'papel', false);
+})();
+</script>
+</body>
+</html>
